@@ -63,6 +63,8 @@ const products = [
     packageInfo: '1 gallon',
     imageEmoji: '🥛',
     healthyScore: 74,
+    description: 'A staple dairy item with strong weekly price variation across stores and club membership offers.',
+    tags: ['Breakfast', 'Protein', 'Family staple'],
     priceOptions: [
       PriceOption(storeId: 'walmart', price: 3.48, unitPrice: 0.92, unitLabel: 'qt', availability: true),
       PriceOption(storeId: 'market-basket', price: 3.29, unitPrice: 0.82, unitLabel: 'qt', availability: true, discountLabel: 'Weekly deal'),
@@ -78,6 +80,8 @@ const products = [
     packageInfo: 'per lb',
     imageEmoji: '🍌',
     healthyScore: 96,
+    description: 'One of the clearest produce price leaders, ideal for low-cost nutrition and unit-price comparison.',
+    tags: ['Fresh', 'High fiber', 'Budget pick'],
     priceOptions: [
       PriceOption(storeId: 'walmart', price: 0.58, unitPrice: 0.58, unitLabel: 'lb', availability: true),
       PriceOption(storeId: 'market-basket', price: 0.49, unitPrice: 0.49, unitLabel: 'lb', availability: true),
@@ -93,6 +97,8 @@ const products = [
     packageInfo: '12 count',
     imageEmoji: '🥚',
     healthyScore: 88,
+    description: 'A high-frequency cart item that benefits from price alerts because weekly changes are common.',
+    tags: ['Protein', 'Breakfast', 'Price alert'],
     priceOptions: [
       PriceOption(storeId: 'walmart', price: 4.12, unitPrice: 0.34, unitLabel: 'egg', availability: true),
       PriceOption(storeId: 'market-basket', price: 3.79, unitPrice: 0.32, unitLabel: 'egg', availability: true),
@@ -108,6 +114,8 @@ const products = [
     packageInfo: 'boneless, per lb',
     imageEmoji: '🍗',
     healthyScore: 91,
+    description: 'Useful for comparing family packs, wholesale pricing, and membership savings.',
+    tags: ['Lean protein', 'Meal prep', 'Bulk savings'],
     priceOptions: [
       PriceOption(storeId: 'walmart', price: 3.67, unitPrice: 3.67, unitLabel: 'lb', availability: true),
       PriceOption(storeId: 'market-basket', price: 3.49, unitPrice: 3.49, unitLabel: 'lb', availability: true, discountLabel: 'Family pack'),
@@ -123,6 +131,8 @@ const products = [
     packageInfo: '18 oz',
     imageEmoji: '🥣',
     healthyScore: 62,
+    description: 'Good example of where unit price can matter more than sticker price because pack sizes vary.',
+    tags: ['Breakfast', 'Deals', 'Multi-buy'],
     priceOptions: [
       PriceOption(storeId: 'walmart', price: 3.98, unitPrice: 0.22, unitLabel: 'oz', availability: true),
       PriceOption(storeId: 'market-basket', price: 4.29, unitPrice: 0.24, unitLabel: 'oz', availability: true),
@@ -138,6 +148,8 @@ const products = [
     packageInfo: '6 rolls',
     imageEmoji: '🧻',
     healthyScore: 0,
+    description: 'Household essentials often reward bulk purchase comparisons and club membership pricing.',
+    tags: ['Household', 'Bulk', 'Stock-up item'],
     priceOptions: [
       PriceOption(storeId: 'walmart', price: 8.97, unitPrice: 1.49, unitLabel: 'roll', availability: true),
       PriceOption(storeId: 'market-basket', price: 9.29, unitPrice: 1.55, unitLabel: 'roll', availability: false),

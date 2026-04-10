@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../core/app_state.dart';
 import '../../data/mock_data.dart';
 import '../../models/product_model.dart';
 import '../../models/store_model.dart';
+import '../../widgets/product_card.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -14,6 +16,8 @@ class HomeScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final featured = products.first;
     final bestCartStore = _bestCartStore();
+    final appState = AppStateScope.of(context);
+    final favoriteProducts = products.where((product) => appState.isFavorite(product.id)).toList();
 
     return SafeArea(
       child: ListView(
@@ -94,6 +98,18 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(height: 12),
           _featuredCard(featured),
           const SizedBox(height: 24),
+          Text('Your favorites', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 12),
+          if (favoriteProducts.isEmpty)
+            const Text('Save items to favorites to watch price drops and compare later.')
+          else
+            ...favoriteProducts.map(
+              (product) => Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: ProductCard(product: product, compact: true, showComparisonSummary: false),
+              ),
+            ),
+          const SizedBox(height: 24),
           Text('Best-value items', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
           ...products.take(4).map((product) {
@@ -132,54 +148,7 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _featuredCard(ProductModel product) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(28)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Text(product.imageEmoji, style: const TextStyle(fontSize: 34)),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(product.name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                    Text('${product.brand} • ${product.packageInfo}', style: const TextStyle(color: Colors.black54)),
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(color: const Color(0xFFE8F5E9), borderRadius: BorderRadius.circular(100)),
-                child: Text('Health ${product.healthyScore}/100'),
-              ),
-            ],
-          ),
-          const SizedBox(height: 18),
-          ...product.priceOptions.map((option) {
-            final store = _storeById(option.storeId);
-            final effectivePrice = option.membershipPrice ?? option.price;
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: Row(
-                children: [
-                  Expanded(child: Text(store.name, style: const TextStyle(fontWeight: FontWeight.w600))),
-                  if (option.discountLabel != null)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: Text(option.discountLabel!, style: const TextStyle(color: Colors.green, fontSize: 12)),
-                    ),
-                  Text('\$${effectivePrice.toStringAsFixed(2)}'),
-                ],
-              ),
-            );
-          }),
-        ],
-      ),
-    );
+    return ProductCard(product: product, showComparisonSummary: true);
   }
 
   StoreModel _bestCartStore() {

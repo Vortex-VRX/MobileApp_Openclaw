@@ -9,6 +9,8 @@ class ProductModel {
     required this.packageInfo,
     required this.imageEmoji,
     required this.healthyScore,
+    required this.description,
+    required this.tags,
     required this.priceOptions,
   });
 
@@ -19,6 +21,8 @@ class ProductModel {
   final String packageInfo;
   final String imageEmoji;
   final int healthyScore;
+  final String description;
+  final List<String> tags;
   final List<PriceOption> priceOptions;
 
   PriceOption get cheapestOption {

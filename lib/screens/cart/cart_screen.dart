@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../core/app_state.dart';
 import '../../data/mock_data.dart';
+import '../../models/product_model.dart';
 import '../../models/store_model.dart';
 
 class CartScreen extends StatelessWidget {
@@ -10,7 +12,11 @@ class CartScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final totals = {for (final store in stores) store: _cartTotal(store.id)}.entries.toList()
+    final appState = AppStateScope.of(context);
+    final cartItems = products.where((product) => appState.inCart(product.id)).toList();
+    final totals = {
+      for (final store in stores) store: _cartTotal(store.id, cartItems),
+    }.entries.toList()
       ..sort((a, b) => a.value.compareTo(b.value));
 
     final best = totals.first;
@@ -29,7 +35,7 @@ class CartScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Sample cart total', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                Text('Selected cart total', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
                 Text('Save \$${savings.toStringAsFixed(2)} by shopping at ${best.key.name} instead of ${worst.key.name}.', style: const TextStyle(color: Colors.black54)),
                 const SizedBox(height: 20),
@@ -67,7 +73,7 @@ class CartScreen extends StatelessWidget {
           const SizedBox(height: 24),
           Text('Items in cart', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
-          ...products.take(5).map((product) {
+          ...cartItems.map((product) {
             final cheapest = product.cheapestOption;
             final bestUnit = product.bestUnitOption;
             return Padding(
@@ -79,7 +85,10 @@ class CartScreen extends StatelessWidget {
                 leading: Text(product.imageEmoji, style: const TextStyle(fontSize: 24)),
                 title: Text(product.name),
                 subtitle: Text('Best price: ${_storeById(cheapest.storeId).name} • Best unit: ${_storeById(bestUnit.storeId).name}'),
-                trailing: Text('\$${cheapest.price.toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                trailing: IconButton(
+                  onPressed: () => appState.toggleCart(product.id),
+                  icon: const Icon(Icons.remove_circle_outline),
+                ),
               ),
             );
           }),
@@ -88,9 +97,9 @@ class CartScreen extends StatelessWidget {
     );
   }
 
-  double _cartTotal(String storeId) {
+  double _cartTotal(String storeId, List<ProductModel> cartItems) {
     var total = 0.0;
-    for (final product in products.take(5)) {
+    for (final product in cartItems) {
       final option = product.priceOptions.firstWhere((item) => item.storeId == storeId);
       total += option.membershipPrice ?? option.price;
     }
