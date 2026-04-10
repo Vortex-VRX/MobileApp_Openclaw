@@ -1,0 +1,148 @@
+import '../models/category_model.dart';
+import '../models/price_option.dart';
+import '../models/product_model.dart';
+import '../models/store_model.dart';
+
+const stores = [
+  StoreModel(
+    id: 'walmart',
+    name: 'Walmart',
+    type: 'Discount Supercenter',
+    distanceMiles: 2.4,
+    hasPickup: true,
+    hasDelivery: true,
+    membershipRequired: false,
+    colorHex: 0xFF0071CE,
+  ),
+  StoreModel(
+    id: 'market-basket',
+    name: 'Market Basket',
+    type: 'Local Grocery',
+    distanceMiles: 1.8,
+    hasPickup: false,
+    hasDelivery: false,
+    membershipRequired: false,
+    colorHex: 0xFF16833C,
+  ),
+  StoreModel(
+    id: 'bjs',
+    name: 'BJ\'s Wholesale',
+    type: 'Wholesale Club',
+    distanceMiles: 5.3,
+    hasPickup: true,
+    hasDelivery: true,
+    membershipRequired: true,
+    colorHex: 0xFFB71C1C,
+  ),
+  StoreModel(
+    id: 'target',
+    name: 'Target',
+    type: 'General Retail',
+    distanceMiles: 3.1,
+    hasPickup: true,
+    hasDelivery: true,
+    membershipRequired: false,
+    colorHex: 0xFFCC0000,
+  ),
+];
+
+const categories = [
+  CategoryModel(id: 'produce', title: 'Fruits & Vegetables', icon: '🥦', itemCount: 24),
+  CategoryModel(id: 'meat', title: 'Meat & Poultry', icon: '🍗', itemCount: 18),
+  CategoryModel(id: 'dairy', title: 'Dairy Products', icon: '🥛', itemCount: 16),
+  CategoryModel(id: 'snacks', title: 'Snacks & Beverages', icon: '🥤', itemCount: 31),
+  CategoryModel(id: 'household', title: 'Household Items', icon: '🧻', itemCount: 12),
+];
+
+const products = [
+  ProductModel(
+    id: 'milk',
+    name: 'Whole Milk',
+    brand: 'Great Value / Store Brand',
+    category: 'Dairy Products',
+    packageInfo: '1 gallon',
+    imageEmoji: '🥛',
+    healthyScore: 74,
+    priceOptions: [
+      PriceOption(storeId: 'walmart', price: 3.48, unitPrice: 0.92, unitLabel: 'qt', availability: true),
+      PriceOption(storeId: 'market-basket', price: 3.29, unitPrice: 0.82, unitLabel: 'qt', availability: true, discountLabel: 'Weekly deal'),
+      PriceOption(storeId: 'bjs', price: 3.89, unitPrice: 0.97, unitLabel: 'qt', availability: true, membershipPrice: 3.49),
+      PriceOption(storeId: 'target', price: 3.69, unitPrice: 0.92, unitLabel: 'qt', availability: true),
+    ],
+  ),
+  ProductModel(
+    id: 'banana',
+    name: 'Bananas',
+    brand: 'Fresh Produce',
+    category: 'Fruits & Vegetables',
+    packageInfo: 'per lb',
+    imageEmoji: '🍌',
+    healthyScore: 96,
+    priceOptions: [
+      PriceOption(storeId: 'walmart', price: 0.58, unitPrice: 0.58, unitLabel: 'lb', availability: true),
+      PriceOption(storeId: 'market-basket', price: 0.49, unitPrice: 0.49, unitLabel: 'lb', availability: true),
+      PriceOption(storeId: 'bjs', price: 0.63, unitPrice: 0.63, unitLabel: 'lb', availability: false),
+      PriceOption(storeId: 'target', price: 0.59, unitPrice: 0.59, unitLabel: 'lb', availability: true),
+    ],
+  ),
+  ProductModel(
+    id: 'eggs',
+    name: 'Large Eggs',
+    brand: 'Grade A',
+    category: 'Dairy Products',
+    packageInfo: '12 count',
+    imageEmoji: '🥚',
+    healthyScore: 88,
+    priceOptions: [
+      PriceOption(storeId: 'walmart', price: 4.12, unitPrice: 0.34, unitLabel: 'egg', availability: true),
+      PriceOption(storeId: 'market-basket', price: 3.79, unitPrice: 0.32, unitLabel: 'egg', availability: true),
+      PriceOption(storeId: 'bjs', price: 6.99, unitPrice: 0.29, unitLabel: 'egg', availability: true, membershipPrice: 6.49),
+      PriceOption(storeId: 'target', price: 4.39, unitPrice: 0.37, unitLabel: 'egg', availability: true),
+    ],
+  ),
+  ProductModel(
+    id: 'chicken',
+    name: 'Chicken Breast',
+    brand: 'Fresh Pack',
+    category: 'Meat & Poultry',
+    packageInfo: 'boneless, per lb',
+    imageEmoji: '🍗',
+    healthyScore: 91,
+    priceOptions: [
+      PriceOption(storeId: 'walmart', price: 3.67, unitPrice: 3.67, unitLabel: 'lb', availability: true),
+      PriceOption(storeId: 'market-basket', price: 3.49, unitPrice: 3.49, unitLabel: 'lb', availability: true, discountLabel: 'Family pack'),
+      PriceOption(storeId: 'bjs', price: 3.19, unitPrice: 3.19, unitLabel: 'lb', availability: true, membershipPrice: 2.99),
+      PriceOption(storeId: 'target', price: 4.29, unitPrice: 4.29, unitLabel: 'lb', availability: true),
+    ],
+  ),
+  ProductModel(
+    id: 'cereal',
+    name: 'Honey Oat Cereal',
+    brand: 'Family Pantry',
+    category: 'Snacks & Beverages',
+    packageInfo: '18 oz',
+    imageEmoji: '🥣',
+    healthyScore: 62,
+    priceOptions: [
+      PriceOption(storeId: 'walmart', price: 3.98, unitPrice: 0.22, unitLabel: 'oz', availability: true),
+      PriceOption(storeId: 'market-basket', price: 4.29, unitPrice: 0.24, unitLabel: 'oz', availability: true),
+      PriceOption(storeId: 'bjs', price: 7.99, unitPrice: 0.18, unitLabel: 'oz', availability: true, membershipPrice: 7.49),
+      PriceOption(storeId: 'target', price: 4.49, unitPrice: 0.25, unitLabel: 'oz', availability: true, discountLabel: 'Buy 2 save 10%'),
+    ],
+  ),
+  ProductModel(
+    id: 'paper-towels',
+    name: 'Paper Towels',
+    brand: 'Ultra Clean',
+    category: 'Household Items',
+    packageInfo: '6 rolls',
+    imageEmoji: '🧻',
+    healthyScore: 0,
+    priceOptions: [
+      PriceOption(storeId: 'walmart', price: 8.97, unitPrice: 1.49, unitLabel: 'roll', availability: true),
+      PriceOption(storeId: 'market-basket', price: 9.29, unitPrice: 1.55, unitLabel: 'roll', availability: false),
+      PriceOption(storeId: 'bjs', price: 15.99, unitPrice: 1.14, unitLabel: 'roll', availability: true, membershipPrice: 14.99),
+      PriceOption(storeId: 'target', price: 10.49, unitPrice: 1.75, unitLabel: 'roll', availability: true),
+    ],
+  ),
+];
