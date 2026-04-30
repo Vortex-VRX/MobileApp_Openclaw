@@ -1,4 +1,4 @@
-# MobileApp_Openclaw
+# MobileApp_Codex
 
 A Flutter grocery price comparison app concept based on a multi-store savings workflow.
 
