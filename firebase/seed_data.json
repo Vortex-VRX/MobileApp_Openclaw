@@ -1,0 +1,183 @@
+{
+  "stores": {
+    "walmart": {
+      "name": "Walmart",
+      "type": "Discount Supercenter",
+      "distanceMiles": 2.4,
+      "hasPickup": true,
+      "hasDelivery": true,
+      "membershipRequired": false,
+      "colorHex": "#0071CE",
+      "active": true
+    },
+    "market-basket": {
+      "name": "Market Basket",
+      "type": "Local Grocery",
+      "distanceMiles": 1.8,
+      "hasPickup": false,
+      "hasDelivery": false,
+      "membershipRequired": false,
+      "colorHex": "#16833C",
+      "active": true
+    },
+    "bjs": {
+      "name": "BJ's Wholesale",
+      "type": "Wholesale Club",
+      "distanceMiles": 5.3,
+      "hasPickup": true,
+      "hasDelivery": true,
+      "membershipRequired": true,
+      "colorHex": "#B71C1C",
+      "active": true
+    },
+    "target": {
+      "name": "Target",
+      "type": "General Retail",
+      "distanceMiles": 3.1,
+      "hasPickup": true,
+      "hasDelivery": true,
+      "membershipRequired": false,
+      "colorHex": "#CC0000",
+      "active": true
+    }
+  },
+  "categories": {
+    "produce": { "title": "Fruits & Vegetables", "icon": "🥦", "itemCount": 24, "sortOrder": 1, "active": true },
+    "meat": { "title": "Meat & Poultry", "icon": "🍗", "itemCount": 18, "sortOrder": 2, "active": true },
+    "dairy": { "title": "Dairy Products", "icon": "🥛", "itemCount": 16, "sortOrder": 3, "active": true },
+    "snacks": { "title": "Snacks & Beverages", "icon": "🥤", "itemCount": 31, "sortOrder": 4, "active": true },
+    "household": { "title": "Household Items", "icon": "🧻", "itemCount": 12, "sortOrder": 5, "active": true }
+  },
+  "products": {
+    "milk": {
+      "name": "Whole Milk",
+      "brand": "Great Value / Store Brand",
+      "categoryId": "dairy",
+      "categoryTitle": "Dairy Products",
+      "packageInfo": "1 gallon",
+      "imageEmoji": "🥛",
+      "healthyScore": 74,
+      "description": "A staple dairy item with strong weekly price variation across stores and club membership offers.",
+      "tags": ["Breakfast", "Protein", "Family staple"],
+      "searchableKeywords": ["milk", "whole", "dairy", "gallon", "breakfast"],
+      "active": true,
+      "prices": {
+        "walmart": { "storeId": "walmart", "storeName": "Walmart", "price": 3.48, "unitPrice": 0.92, "unitLabel": "qt", "availability": true, "discountLabel": null, "membershipPrice": null, "source": "manual" },
+        "market-basket": { "storeId": "market-basket", "storeName": "Market Basket", "price": 3.29, "unitPrice": 0.82, "unitLabel": "qt", "availability": true, "discountLabel": "Weekly deal", "membershipPrice": null, "source": "manual" },
+        "bjs": { "storeId": "bjs", "storeName": "BJ's Wholesale", "price": 3.89, "unitPrice": 0.97, "unitLabel": "qt", "availability": true, "discountLabel": null, "membershipPrice": 3.49, "source": "manual" },
+        "target": { "storeId": "target", "storeName": "Target", "price": 3.69, "unitPrice": 0.92, "unitLabel": "qt", "availability": true, "discountLabel": null, "membershipPrice": null, "source": "manual" }
+      }
+    },
+    "banana": {
+      "name": "Bananas",
+      "brand": "Fresh Produce",
+      "categoryId": "produce",
+      "categoryTitle": "Fruits & Vegetables",
+      "packageInfo": "per lb",
+      "imageEmoji": "🍌",
+      "healthyScore": 96,
+      "description": "One of the clearest produce price leaders, ideal for low-cost nutrition and unit-price comparison.",
+      "tags": ["Fresh", "High fiber", "Budget pick"],
+      "searchableKeywords": ["banana", "bananas", "fruit", "produce", "fiber"],
+      "active": true,
+      "prices": {
+        "walmart": { "storeId": "walmart", "storeName": "Walmart", "price": 0.58, "unitPrice": 0.58, "unitLabel": "lb", "availability": true, "discountLabel": null, "membershipPrice": null, "source": "manual" },
+        "market-basket": { "storeId": "market-basket", "storeName": "Market Basket", "price": 0.49, "unitPrice": 0.49, "unitLabel": "lb", "availability": true, "discountLabel": null, "membershipPrice": null, "source": "manual" },
+        "bjs": { "storeId": "bjs", "storeName": "BJ's Wholesale", "price": 0.63, "unitPrice": 0.63, "unitLabel": "lb", "availability": false, "discountLabel": null, "membershipPrice": null, "source": "manual" },
+        "target": { "storeId": "target", "storeName": "Target", "price": 0.59, "unitPrice": 0.59, "unitLabel": "lb", "availability": true, "discountLabel": null, "membershipPrice": null, "source": "manual" }
+      }
+    },
+    "eggs": {
+      "name": "Large Eggs",
+      "brand": "Grade A",
+      "categoryId": "dairy",
+      "categoryTitle": "Dairy Products",
+      "packageInfo": "12 count",
+      "imageEmoji": "🥚",
+      "healthyScore": 88,
+      "description": "A high-frequency cart item that benefits from price alerts because weekly changes are common.",
+      "tags": ["Protein", "Breakfast", "Price alert"],
+      "searchableKeywords": ["eggs", "egg", "large", "protein", "breakfast", "dozen"],
+      "active": true,
+      "prices": {
+        "walmart": { "storeId": "walmart", "storeName": "Walmart", "price": 4.12, "unitPrice": 0.34, "unitLabel": "egg", "availability": true, "discountLabel": null, "membershipPrice": null, "source": "manual" },
+        "market-basket": { "storeId": "market-basket", "storeName": "Market Basket", "price": 3.79, "unitPrice": 0.32, "unitLabel": "egg", "availability": true, "discountLabel": null, "membershipPrice": null, "source": "manual" },
+        "bjs": { "storeId": "bjs", "storeName": "BJ's Wholesale", "price": 6.99, "unitPrice": 0.29, "unitLabel": "egg", "availability": true, "discountLabel": null, "membershipPrice": 6.49, "source": "manual" },
+        "target": { "storeId": "target", "storeName": "Target", "price": 4.39, "unitPrice": 0.37, "unitLabel": "egg", "availability": true, "discountLabel": null, "membershipPrice": null, "source": "manual" }
+      }
+    },
+    "chicken": {
+      "name": "Chicken Breast",
+      "brand": "Fresh Pack",
+      "categoryId": "meat",
+      "categoryTitle": "Meat & Poultry",
+      "packageInfo": "boneless, per lb",
+      "imageEmoji": "🍗",
+      "healthyScore": 91,
+      "description": "Useful for comparing family packs, wholesale pricing, and membership savings.",
+      "tags": ["Lean protein", "Meal prep", "Bulk savings"],
+      "searchableKeywords": ["chicken", "breast", "meat", "poultry", "protein"],
+      "active": true,
+      "prices": {
+        "walmart": { "storeId": "walmart", "storeName": "Walmart", "price": 3.67, "unitPrice": 3.67, "unitLabel": "lb", "availability": true, "discountLabel": null, "membershipPrice": null, "source": "manual" },
+        "market-basket": { "storeId": "market-basket", "storeName": "Market Basket", "price": 3.49, "unitPrice": 3.49, "unitLabel": "lb", "availability": true, "discountLabel": "Family pack", "membershipPrice": null, "source": "manual" },
+        "bjs": { "storeId": "bjs", "storeName": "BJ's Wholesale", "price": 3.19, "unitPrice": 3.19, "unitLabel": "lb", "availability": true, "discountLabel": null, "membershipPrice": 2.99, "source": "manual" },
+        "target": { "storeId": "target", "storeName": "Target", "price": 4.29, "unitPrice": 4.29, "unitLabel": "lb", "availability": true, "discountLabel": null, "membershipPrice": null, "source": "manual" }
+      }
+    },
+    "cereal": {
+      "name": "Honey Oat Cereal",
+      "brand": "Family Pantry",
+      "categoryId": "snacks",
+      "categoryTitle": "Snacks & Beverages",
+      "packageInfo": "18 oz",
+      "imageEmoji": "🥣",
+      "healthyScore": 62,
+      "description": "Good example of where unit price can matter more than sticker price because pack sizes vary.",
+      "tags": ["Breakfast", "Deals", "Multi-buy"],
+      "searchableKeywords": ["cereal", "honey", "oat", "breakfast", "snack"],
+      "active": true,
+      "prices": {
+        "walmart": { "storeId": "walmart", "storeName": "Walmart", "price": 3.98, "unitPrice": 0.22, "unitLabel": "oz", "availability": true, "discountLabel": null, "membershipPrice": null, "source": "manual" },
+        "market-basket": { "storeId": "market-basket", "storeName": "Market Basket", "price": 4.29, "unitPrice": 0.24, "unitLabel": "oz", "availability": true, "discountLabel": null, "membershipPrice": null, "source": "manual" },
+        "bjs": { "storeId": "bjs", "storeName": "BJ's Wholesale", "price": 7.99, "unitPrice": 0.18, "unitLabel": "oz", "availability": true, "discountLabel": null, "membershipPrice": 7.49, "source": "manual" },
+        "target": { "storeId": "target", "storeName": "Target", "price": 4.49, "unitPrice": 0.25, "unitLabel": "oz", "availability": true, "discountLabel": "Buy 2 save 10%", "membershipPrice": null, "source": "manual" }
+      }
+    },
+    "paper-towels": {
+      "name": "Paper Towels",
+      "brand": "Ultra Clean",
+      "categoryId": "household",
+      "categoryTitle": "Household Items",
+      "packageInfo": "6 rolls",
+      "imageEmoji": "🧻",
+      "healthyScore": 0,
+      "description": "Household essentials often reward bulk purchase comparisons and club membership pricing.",
+      "tags": ["Household", "Bulk", "Stock-up item"],
+      "searchableKeywords": ["paper", "towels", "paper towels", "household", "clean"],
+      "active": true,
+      "prices": {
+        "walmart": { "storeId": "walmart", "storeName": "Walmart", "price": 8.97, "unitPrice": 1.49, "unitLabel": "roll", "availability": true, "discountLabel": null, "membershipPrice": null, "source": "manual" },
+        "market-basket": { "storeId": "market-basket", "storeName": "Market Basket", "price": 9.29, "unitPrice": 1.55, "unitLabel": "roll", "availability": false, "discountLabel": null, "membershipPrice": null, "source": "manual" },
+        "bjs": { "storeId": "bjs", "storeName": "BJ's Wholesale", "price": 15.99, "unitPrice": 1.14, "unitLabel": "roll", "availability": true, "discountLabel": null, "membershipPrice": 14.99, "source": "manual" },
+        "target": { "storeId": "target", "storeName": "Target", "price": 10.49, "unitPrice": 1.75, "unitLabel": "roll", "availability": true, "discountLabel": null, "membershipPrice": null, "source": "manual" }
+      }
+    }
+  },
+  "sampleUserData": {
+    "cart": {
+      "milk": { "productId": "milk", "quantity": 1 },
+      "eggs": { "productId": "eggs", "quantity": 1 },
+      "chicken": { "productId": "chicken", "quantity": 1 },
+      "banana": { "productId": "banana", "quantity": 1 }
+    },
+    "favorites": {
+      "milk": { "productId": "milk" },
+      "banana": { "productId": "banana" }
+    },
+    "alerts": {
+      "milk-price-drop": { "productId": "milk", "targetPrice": 3.25, "enabled": true },
+      "eggs-price-drop": { "productId": "eggs", "targetPrice": 3.50, "enabled": true }
+    }
+  }
+}
