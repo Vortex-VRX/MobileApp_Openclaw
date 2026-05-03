@@ -26,13 +26,26 @@ class ProductModel {
   final List<PriceOption> priceOptions;
 
   PriceOption get cheapestOption {
-    final sorted = [...priceOptions]..sort((a, b) => a.price.compareTo(b.price));
+    final sorted = [...priceOptions]
+      ..sort((a, b) {
+        if (a.availability != b.availability) {
+          return a.availability ? -1 : 1;
+        }
+        return _effectivePrice(a).compareTo(_effectivePrice(b));
+      });
     return sorted.first;
   }
 
   PriceOption get bestUnitOption {
     final sorted = [...priceOptions]
-      ..sort((a, b) => a.unitPrice.compareTo(b.unitPrice));
+      ..sort((a, b) {
+        if (a.availability != b.availability) {
+          return a.availability ? -1 : 1;
+        }
+        return a.unitPrice.compareTo(b.unitPrice);
+      });
     return sorted.first;
   }
+
+  double _effectivePrice(PriceOption option) => option.membershipPrice ?? option.price;
 }
