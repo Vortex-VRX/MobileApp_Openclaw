@@ -2,60 +2,25 @@ import '../models/category_model.dart';
 import '../models/price_option.dart';
 import '../models/product_model.dart';
 import '../models/store_model.dart';
+import 'supabase_catalog_repository.dart';
 
-const stores = [
-  StoreModel(
-    id: 'walmart',
-    name: 'Walmart',
-    type: 'Discount Supercenter',
-    distanceMiles: 2.4,
-    hasPickup: true,
-    hasDelivery: true,
-    membershipRequired: false,
-    colorHex: 0xFF0071CE,
-  ),
-  StoreModel(
-    id: 'market-basket',
-    name: 'Market Basket',
-    type: 'Local Grocery',
-    distanceMiles: 1.8,
-    hasPickup: false,
-    hasDelivery: false,
-    membershipRequired: false,
-    colorHex: 0xFF16833C,
-  ),
-  StoreModel(
-    id: 'bjs',
-    name: 'BJ\'s Wholesale',
-    type: 'Wholesale Club',
-    distanceMiles: 5.3,
-    hasPickup: true,
-    hasDelivery: true,
-    membershipRequired: true,
-    colorHex: 0xFFB71C1C,
-  ),
-  StoreModel(
-    id: 'target',
-    name: 'Target',
-    type: 'General Retail',
-    distanceMiles: 3.1,
-    hasPickup: true,
-    hasDelivery: true,
-    membershipRequired: false,
-    colorHex: 0xFFCC0000,
-  ),
+List<StoreModel> stores = [
+  const StoreModel(id: 'walmart', name: 'Walmart', type: 'Discount Supercenter', distanceMiles: 2.4, hasPickup: true, hasDelivery: true, membershipRequired: false, colorHex: 0xFF0071CE),
+  const StoreModel(id: 'market-basket', name: 'Market Basket', type: 'Local Grocery', distanceMiles: 1.8, hasPickup: false, hasDelivery: false, membershipRequired: false, colorHex: 0xFF16833C),
+  const StoreModel(id: 'bjs', name: 'BJ\'s Wholesale', type: 'Wholesale Club', distanceMiles: 5.3, hasPickup: true, hasDelivery: true, membershipRequired: true, colorHex: 0xFFB71C1C),
+  const StoreModel(id: 'target', name: 'Target', type: 'General Retail', distanceMiles: 3.1, hasPickup: true, hasDelivery: true, membershipRequired: false, colorHex: 0xFFCC0000),
 ];
 
-const categories = [
-  CategoryModel(id: 'produce', title: 'Fruits & Vegetables', icon: '🥦', itemCount: 24),
-  CategoryModel(id: 'meat', title: 'Meat & Poultry', icon: '🍗', itemCount: 18),
-  CategoryModel(id: 'dairy', title: 'Dairy Products', icon: '🥛', itemCount: 16),
-  CategoryModel(id: 'snacks', title: 'Snacks & Beverages', icon: '🥤', itemCount: 31),
-  CategoryModel(id: 'household', title: 'Household Items', icon: '🧻', itemCount: 12),
+List<CategoryModel> categories = [
+  const CategoryModel(id: 'produce', title: 'Fruits & Vegetables', icon: '🥦', itemCount: 24),
+  const CategoryModel(id: 'meat', title: 'Meat & Poultry', icon: '🍗', itemCount: 18),
+  const CategoryModel(id: 'dairy', title: 'Dairy Products', icon: '🥛', itemCount: 16),
+  const CategoryModel(id: 'snacks', title: 'Snacks & Beverages', icon: '🥤', itemCount: 31),
+  const CategoryModel(id: 'household', title: 'Household Items', icon: '🧻', itemCount: 12),
 ];
 
-const products = [
-  ProductModel(
+List<ProductModel> products = [
+  const ProductModel(
     id: 'milk',
     name: 'Whole Milk',
     brand: 'Great Value / Store Brand',
@@ -72,7 +37,7 @@ const products = [
       PriceOption(storeId: 'target', price: 3.69, unitPrice: 0.92, unitLabel: 'qt', availability: true),
     ],
   ),
-  ProductModel(
+  const ProductModel(
     id: 'banana',
     name: 'Bananas',
     brand: 'Fresh Produce',
@@ -89,7 +54,7 @@ const products = [
       PriceOption(storeId: 'target', price: 0.59, unitPrice: 0.59, unitLabel: 'lb', availability: true),
     ],
   ),
-  ProductModel(
+  const ProductModel(
     id: 'eggs',
     name: 'Large Eggs',
     brand: 'Grade A',
@@ -106,7 +71,7 @@ const products = [
       PriceOption(storeId: 'target', price: 4.39, unitPrice: 0.37, unitLabel: 'egg', availability: true),
     ],
   ),
-  ProductModel(
+  const ProductModel(
     id: 'chicken',
     name: 'Chicken Breast',
     brand: 'Fresh Pack',
@@ -123,7 +88,7 @@ const products = [
       PriceOption(storeId: 'target', price: 4.29, unitPrice: 4.29, unitLabel: 'lb', availability: true),
     ],
   ),
-  ProductModel(
+  const ProductModel(
     id: 'cereal',
     name: 'Honey Oat Cereal',
     brand: 'Family Pantry',
@@ -140,7 +105,7 @@ const products = [
       PriceOption(storeId: 'target', price: 4.49, unitPrice: 0.25, unitLabel: 'oz', availability: true, discountLabel: 'Buy 2 save 10%'),
     ],
   ),
-  ProductModel(
+  const ProductModel(
     id: 'paper-towels',
     name: 'Paper Towels',
     brand: 'Ultra Clean',
@@ -158,3 +123,15 @@ const products = [
     ],
   ),
 ];
+
+void replaceCatalogData(CatalogData data) {
+  if (data.stores.isNotEmpty) {
+    stores = data.stores;
+  }
+  if (data.categories.isNotEmpty) {
+    categories = data.categories;
+  }
+  if (data.products.isNotEmpty) {
+    products = data.products;
+  }
+}
