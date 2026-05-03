@@ -7,31 +7,37 @@ This folder contains the database setup for MobileApp_Codex.
 - `migrations/001_initial_schema.sql` creates the database tables, indexes, triggers, and row-level security policies.
 - `migrations/002_seed_catalog.sql` inserts the first grocery stores, categories, products, and prices.
 
-## Recommended Supabase Project
-
-Create one Supabase project for the app, for example:
+## Active Supabase Project
 
 ```text
-mobileapp-codex
+Project: Vortex-VRX's Project
+Project ref: npnekplfuwnjlqvzwfdl
+Project URL: https://npnekplfuwnjlqvzwfdl.supabase.co
+Region: us-east-1
 ```
 
-Use Supabase Auth plus PostgreSQL tables.
+## Applied Migrations
 
-## How To Apply The Database
+These migrations have already been applied to the connected Supabase project:
 
-Option 1: Supabase Dashboard
+```text
+20260503001425 initial_schema
+20260503001448 seed_catalog
+```
 
-1. Open the Supabase project.
-2. Go to SQL Editor.
-3. Run `001_initial_schema.sql`.
-4. Run `002_seed_catalog.sql`.
+## Flutter Runtime Config
 
-Option 2: Supabase CLI
+The app reads live catalog data from Supabase when `SUPABASE_ANON_KEY` is provided. Without it, the app keeps using the bundled fallback catalog so development does not break.
+
+Run the app with:
 
 ```bash
-supabase link --project-ref YOUR_PROJECT_REF
-supabase db push
+flutter run \
+  --dart-define=SUPABASE_URL=https://npnekplfuwnjlqvzwfdl.supabase.co \
+  --dart-define=SUPABASE_ANON_KEY=YOUR_ANON_PUBLIC_KEY
 ```
+
+For release builds, pass the same values to `flutter build apk` or `flutter build appbundle`.
 
 ## App Credentials
 
