@@ -6,6 +6,7 @@ This folder contains the database setup for MobileApp_Codex.
 
 - `migrations/001_initial_schema.sql` creates the database tables, indexes, triggers, and row-level security policies.
 - `migrations/002_seed_catalog.sql` inserts the first grocery stores, categories, products, and prices.
+- `migrations/003_catalog_views_and_cart_totals.sql` adds the `product_catalog` view and `compare_cart` function.
 
 ## Active Supabase Project
 
@@ -23,6 +24,7 @@ These migrations have already been applied to the connected Supabase project:
 ```text
 20260503001425 initial_schema
 20260503001448 seed_catalog
+20260503005906 catalog_views_and_cart_totals
 ```
 
 ## Flutter Runtime Config
@@ -48,6 +50,13 @@ The Flutter app should use:
 
 Do not commit the service role key to GitHub. The service role key has admin-level database access and should only be used in private server-side tooling.
 
+## Backend Helpers
+
+The deployed database includes:
+
+- `product_catalog`: a view that returns each active product with category title and sorted prices.
+- `compare_cart(product_ids text[])`: a function that calculates totals across stores for a cart.
+
 ## Access Model
 
 Public users can read:
@@ -56,6 +65,7 @@ Public users can read:
 - categories
 - products
 - product_prices
+- product_catalog
 
 Signed-in users can manage only their own:
 
