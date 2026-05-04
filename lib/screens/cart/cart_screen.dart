@@ -9,20 +9,21 @@ import '../../models/store_model.dart';
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
 
-  StoreModel _storeById(String id) => stores.firstWhere((store) => store.id == id);
+  StoreModel _storeById(String id) => stores.firstWhere((store) => store.id == id, orElse: () => StoreModel(id: id, name: 'Unknown store', type: 'Unavailable', distanceMiles: 0, hasPickup: false, hasDelivery: false, membershipRequired: false, colorHex: 0xFF9E9E9E));
 
   @override
   Widget build(BuildContext context) {
     final appState = AppStateScope.of(context);
     final cartItems = products.where((product) => appState.inCart(product.id)).toList();
     final totals = {
-      for (final store in stores) store: _cartTotal(store.id, cartItems),
+      for (final store in stores)
+        if (_hasPricesForAllItems(store.id, cartItems)) store: _cartTotal(store.id, cartItems),
     }.entries.toList()
       ..sort((a, b) => a.value.compareTo(b.value));
 
-    final best = totals.first;
-    final worst = totals.last;
-    final savings = worst.value - best.value;
+    final best = totals.isEmpty ? null : totals.first;
+    final worst = totals.isEmpty ? null : totals.last;
+    final savings = best == null || worst == null ? 0.0 : worst.value - best.value;
 
     return SafeArea(
       child: ListView(
@@ -41,11 +42,14 @@ class CartScreen extends StatelessWidget {
                 children: [
                   Text('Selected cart total', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
-                  Text('Save \$${savings.toStringAsFixed(2)} by shopping at ${best.key.name} instead of ${worst.key.name}.', style: const TextStyle(color: Colors.black54)),
+                  if (best == null || worst == null)
+                    const Text('Prices are still being collected for the selected stores.', style: TextStyle(color: Colors.black54))
+                  else
+                    Text('Save \$${savings.toStringAsFixed(2)} by shopping at ${best.key.name} instead of ${worst.key.name}.', style: const TextStyle(color: Colors.black54)),
                   const SizedBox(height: 20),
                   ...totals.map((entry) {
                     final store = entry.key;
-                    final isBest = store.id == best.key.id;
+                    final isBest = best != null && store.id == best.key.id;
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 12),
                       child: Container(
@@ -108,6 +112,10 @@ class CartScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  bool _hasPricesForAllItems(String storeId, List<ProductModel> cartItems) {
+    return cartItems.every((product) => product.priceOptions.any((item) => item.storeId == storeId));
   }
 
   double _cartTotal(String storeId, List<ProductModel> cartItems) {
