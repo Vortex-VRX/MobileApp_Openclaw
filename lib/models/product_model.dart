@@ -12,6 +12,7 @@ class ProductModel {
     required this.description,
     required this.tags,
     required this.priceOptions,
+    this.imageUrl,
   });
 
   final String id;
@@ -20,6 +21,7 @@ class ProductModel {
   final String category;
   final String packageInfo;
   final String imageEmoji;
+  final String? imageUrl;
   final int healthyScore;
   final String description;
   final List<String> tags;
