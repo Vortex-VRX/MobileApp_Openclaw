@@ -2,41 +2,19 @@ import 'package:flutter/material.dart';
 
 import '../../core/app_state.dart';
 import '../../data/mock_data.dart';
+import '../../models/category_model.dart';
+import '../../models/price_option.dart';
 import '../../models/product_model.dart';
 import '../../models/store_model.dart';
-import '../../widgets/product_card.dart';
+import '../../widgets/product_detail_sheet.dart';
 import '../../widgets/product_image.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  StoreModel _storeById(String id) => stores.firstWhere(
-        (store) => store.id == id,
-        orElse: () => StoreModel(
-          id: id,
-          name: 'Unknown store',
-          type: 'Unavailable',
-          distanceMiles: 0,
-          hasPickup: false,
-          hasDelivery: false,
-          membershipRequired: false,
-          colorHex: 0xFF9E9E9E,
-        ),
-      );
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final appState = AppStateScope.of(context);
-    final sampleCartItems = products.take(4).toList();
-    final bestCartStore = _bestCartStore(sampleCartItems);
-    final favoriteProducts = products.where((product) => appState.isFavorite(product.id)).toList();
-
-    if (products.isEmpty) {
-      return const SafeArea(
-        child: Center(child: Text('No grocery products loaded yet.')),
-      );
-    }
 
     return SafeArea(
       child: ListView(
@@ -48,18 +26,20 @@ class HomeScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: const [
-                    Text('Delivery to', style: TextStyle(color: Color(0xFF667085), fontWeight: FontWeight.w700)),
+                    Text('Shopping in', style: TextStyle(color: Color(0xFF667085), fontWeight: FontWeight.w700)),
                     SizedBox(height: 4),
                     Text('Wakefield, MA 01880', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Color(0xFF1F2933))),
                   ],
                 ),
               ),
-              DecoratedBox(
-                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFFE4E7EC))),
-                child: IconButton(
-                  tooltip: 'Compare cart',
-                  onPressed: () => appState.selectTab(2),
-                  icon: Badge.count(count: appState.cartProductIds.length, isLabelVisible: appState.cartProductIds.isNotEmpty, child: const Icon(Icons.shopping_cart_outlined)),
+              IconButton.filled(
+                tooltip: 'Compare cart',
+                onPressed: () => appState.selectTab(2),
+                style: IconButton.styleFrom(backgroundColor: Colors.white, foregroundColor: const Color(0xFF1F2933)),
+                icon: Badge.count(
+                  count: appState.cartProductIds.length,
+                  isLabelVisible: appState.cartProductIds.isNotEmpty,
+                  child: const Icon(Icons.shopping_cart_outlined),
                 ),
               ),
             ],
@@ -69,211 +49,214 @@ class HomeScreen extends StatelessWidget {
             readOnly: true,
             onTap: () => appState.selectTab(1),
             decoration: const InputDecoration(
-              hintText: 'Search groceries, brands, and stores',
+              hintText: 'Search groceries and compare prices',
               prefixIcon: Icon(Icons.search),
             ),
           ),
           const SizedBox(height: 18),
-          _SavingsBanner(store: bestCartStore, total: _cartTotal(bestCartStore.id, sampleCartItems), items: sampleCartItems.length),
-          const SizedBox(height: 22),
-          _SectionHeader(title: 'Shop food categories', action: 'See all', onTap: () => appState.selectTab(1)),
+          _SectionHeader(title: 'Stores near you', action: 'All stores', onTap: () => appState.selectTab(3)),
           const SizedBox(height: 12),
           SizedBox(
             height: 112,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
-              itemCount: categories.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 10),
-              itemBuilder: (context, index) {
-                final category = categories[index];
-                return Container(
-                  width: 118,
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18), border: Border.all(color: const Color(0xFFE4E7EC))),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(category.icon, style: const TextStyle(fontSize: 28)),
-                      const Spacer(),
-                      Text(category.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w900)),
-                      Text('${category.itemCount} items', style: const TextStyle(color: Color(0xFF667085), fontSize: 12)),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: 22),
-          _SectionHeader(title: 'Stores to compare', action: 'Stores', onTap: () => appState.selectTab(3)),
-          const SizedBox(height: 12),
-          SizedBox(
-            height: 78,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
               itemCount: stores.length,
               separatorBuilder: (_, __) => const SizedBox(width: 10),
-              itemBuilder: (context, index) {
-                final store = stores[index];
-                return Container(
-                  width: 190,
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18), border: Border.all(color: const Color(0xFFE4E7EC))),
-                  child: Row(
-                    children: [
-                      CircleAvatar(backgroundColor: Color(store.colorHex), child: Text(store.name.characters.first, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900))),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(store.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w900)),
-                            Text('${store.distanceMiles.toStringAsFixed(1)} mi - ${store.membershipRequired ? 'Member deals' : 'Open pricing'}', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xFF667085), fontSize: 12)),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
+              itemBuilder: (context, index) => _StoreCard(store: stores[index]),
             ),
           ),
           const SizedBox(height: 22),
-          _SectionHeader(title: 'Popular comparisons', action: 'Search', onTap: () => appState.selectTab(1)),
+          _SectionHeader(title: 'Food categories', action: 'Search', onTap: () => appState.selectTab(1)),
           const SizedBox(height: 12),
-          ...products.take(3).map(
-                (product) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: ProductCard(product: product, showComparisonSummary: true),
-                ),
-              ),
-          const SizedBox(height: 12),
-          _SectionHeader(title: 'Best-value items', action: 'Compare', onTap: () => appState.selectTab(2)),
-          const SizedBox(height: 12),
-          ...products.skip(3).take(5).map((product) {
-            final cheapest = product.cheapestOption;
-            final store = _storeById(cheapest.storeId);
-            final displayPrice = cheapest.membershipPrice ?? cheapest.price;
+          SizedBox(
+            height: 104,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: categories.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 10),
+              itemBuilder: (context, index) => _CategoryPill(category: categories[index]),
+            ),
+          ),
+          const SizedBox(height: 22),
+          ...stores.map((store) {
+            final storeProducts = _productsForStore(store.id);
+            if (storeProducts.isEmpty) {
+              return const SizedBox.shrink();
+            }
+
             return Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(18),
-                onTap: () => appState.addToCart(product.id),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18), border: Border.all(color: const Color(0xFFE4E7EC))),
-                  child: Row(
-                    children: [
-                      ProductImage(product: product, size: 58, borderRadius: 16),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(product.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
-                            const SizedBox(height: 3),
-                            Text('${product.brand} - ${store.name}', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xFF667085))),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text('\$${displayPrice.toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 17)),
-                          Text('\$${cheapest.unitPrice.toStringAsFixed(2)}/${cheapest.unitLabel}', style: const TextStyle(color: Color(0xFF667085), fontSize: 12)),
-                        ],
-                      ),
-                    ],
+              padding: const EdgeInsets.only(bottom: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _StoreShelfHeader(store: store, itemCount: storeProducts.length),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    height: 270,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: storeProducts.length,
+                      separatorBuilder: (_, __) => const SizedBox(width: 12),
+                      itemBuilder: (context, index) {
+                        final product = storeProducts[index];
+                        final option = product.priceOptions.firstWhere((price) => price.storeId == store.id);
+                        return _StoreProductTile(product: product, store: store, option: option);
+                      },
+                    ),
                   ),
-                ),
+                ],
               ),
             );
           }),
-          if (favoriteProducts.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            Text('Your favorites', style: theme.textTheme.titleLarge),
-            const SizedBox(height: 12),
-            ...favoriteProducts.map(
-              (product) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: ProductCard(product: product, compact: true, showComparisonSummary: false),
-              ),
-            ),
-          ],
         ],
       ),
     );
   }
 
-  StoreModel _bestCartStore(List<ProductModel> cartItems) {
-    if (stores.isEmpty) {
-      return const StoreModel(id: 'none', name: 'No stores yet', type: 'Unavailable', distanceMiles: 0, hasPickup: false, hasDelivery: false, membershipRequired: false, colorHex: 0xFF9E9E9E);
-    }
-
-    final totals = {
-      for (final store in stores)
-        if (_hasPricesForAllItems(store.id, cartItems)) store.id: _cartTotal(store.id, cartItems),
-    };
-
-    if (totals.isEmpty) {
-      return stores.first;
-    }
-
-    final bestStoreId = totals.entries.reduce((a, b) => a.value <= b.value ? a : b).key;
-    return _storeById(bestStoreId);
-  }
-
-  bool _hasPricesForAllItems(String storeId, List<ProductModel> cartItems) {
-    return cartItems.every((product) => product.priceOptions.any((item) => item.storeId == storeId));
-  }
-
-  double _cartTotal(String storeId, List<ProductModel> cartItems) {
-    var total = 0.0;
-    for (final product in cartItems) {
-      final options = product.priceOptions.where((item) => item.storeId == storeId);
-      if (options.isEmpty) {
-        continue;
-      }
-      final option = options.first;
-      total += option.membershipPrice ?? option.price;
-    }
-    return total;
+  List<ProductModel> _productsForStore(String storeId) {
+    return products.where((product) => product.priceOptions.any((option) => option.storeId == storeId)).toList();
   }
 }
 
-class _SavingsBanner extends StatelessWidget {
-  const _SavingsBanner({required this.store, required this.total, required this.items});
+class _StoreCard extends StatelessWidget {
+  const _StoreCard({required this.store});
 
   final StoreModel store;
-  final double total;
-  final int items;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: const Color(0xFF0AAD0A),
-        borderRadius: BorderRadius.circular(22),
-      ),
+      width: 210,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18), border: Border.all(color: const Color(0xFFE4E7EC))),
       child: Row(
         children: [
+          CircleAvatar(radius: 24, backgroundColor: Color(store.colorHex), child: Text(store.name.characters.first, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900))),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('Smartest cart today', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.w800)),
-                const SizedBox(height: 8),
-                Text(store.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w900, height: 1.05)),
-                const SizedBox(height: 8),
-                Text('$items items from \$${total.toStringAsFixed(2)}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
+                Text(store.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
+                const SizedBox(height: 4),
+                Text('${store.distanceMiles.toStringAsFixed(1)} mi - ${store.type}', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xFF667085), fontWeight: FontWeight.w600)),
+                const SizedBox(height: 4),
+                Text(store.membershipRequired ? 'Membership prices' : 'Everyday prices', style: const TextStyle(color: Color(0xFF0AAD0A), fontWeight: FontWeight.w800, fontSize: 12)),
               ],
             ),
           ),
-          const SizedBox(width: 12),
-          const Icon(Icons.savings_outlined, color: Colors.white, size: 42),
         ],
+      ),
+    );
+  }
+}
+
+class _CategoryPill extends StatelessWidget {
+  const _CategoryPill({required this.category});
+
+  final CategoryModel category;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 122,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18), border: Border.all(color: const Color(0xFFE4E7EC))),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(category.icon, style: const TextStyle(fontSize: 28)),
+          const Spacer(),
+          Text(category.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w900)),
+          Text('${category.itemCount} items', style: const TextStyle(color: Color(0xFF667085), fontSize: 12)),
+        ],
+      ),
+    );
+  }
+}
+
+class _StoreShelfHeader extends StatelessWidget {
+  const _StoreShelfHeader({required this.store, required this.itemCount});
+
+  final StoreModel store;
+  final int itemCount;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        CircleAvatar(radius: 18, backgroundColor: Color(store.colorHex), child: Text(store.name.characters.first, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900))),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(store.name, style: Theme.of(context).textTheme.titleLarge),
+              Text('$itemCount groceries available for comparison', style: const TextStyle(color: Color(0xFF667085), fontWeight: FontWeight.w600)),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _StoreProductTile extends StatelessWidget {
+  const _StoreProductTile({required this.product, required this.store, required this.option});
+
+  final ProductModel product;
+  final StoreModel store;
+  final PriceOption option;
+
+  @override
+  Widget build(BuildContext context) {
+    final appState = AppStateScope.of(context);
+    final displayPrice = option.membershipPrice ?? option.price;
+    final inCart = appState.inCart(product.id);
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(18),
+      onTap: () => showModalBottomSheet<void>(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (_) => ProductDetailSheet(product: product),
+      ),
+      child: Container(
+        width: 174,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18), border: Border.all(color: const Color(0xFFE4E7EC))),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Stack(
+              children: [
+                ProductImage(product: product, width: double.infinity, height: 112, borderRadius: 16, fit: BoxFit.contain),
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: SizedBox(
+                    height: 32,
+                    child: FilledButton(
+                      style: FilledButton.styleFrom(minimumSize: const Size(58, 32), padding: const EdgeInsets.symmetric(horizontal: 12), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999))),
+                      onPressed: () => appState.addToCart(product.id),
+                      child: Text(inCart ? 'Added' : 'Add'),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Text('\$${displayPrice.toStringAsFixed(2)}', style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w900)),
+            const SizedBox(height: 3),
+            Text(product.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w800, height: 1.1)),
+            const SizedBox(height: 3),
+            Text(product.packageInfo, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xFF667085), fontSize: 12)),
+            const Spacer(),
+            Text(option.availability ? store.name : 'Unavailable', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: option.availability ? const Color(0xFF0AAD0A) : Colors.red, fontWeight: FontWeight.w800, fontSize: 12)),
+          ],
+        ),
       ),
     );
   }
