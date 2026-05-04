@@ -2,15 +2,34 @@ import 'package:flutter/material.dart';
 
 class AppState extends ChangeNotifier {
   final Set<String> _favoriteProductIds = {'milk', 'banana'};
-  final Set<String> _cartProductIds = {'milk', 'eggs', 'chicken', 'banana'};
+  final Set<String> _cartProductIds = <String>{};
   int _currentTabIndex = 0;
+  bool _isSignedIn = false;
+  String _userEmail = '';
+  String _userName = 'Guest shopper';
 
   Set<String> get favoriteProductIds => _favoriteProductIds;
   Set<String> get cartProductIds => _cartProductIds;
   int get currentTabIndex => _currentTabIndex;
+  bool get isSignedIn => _isSignedIn;
+  String get userEmail => _userEmail;
+  String get userName => _userName;
 
   bool isFavorite(String productId) => _favoriteProductIds.contains(productId);
   bool inCart(String productId) => _cartProductIds.contains(productId);
+
+  void signIn(String email) {
+    _isSignedIn = true;
+    _userEmail = email;
+    _userName = email.isEmpty ? 'Guest shopper' : email.split('@').first;
+    notifyListeners();
+  }
+
+  void signOut() {
+    _isSignedIn = false;
+    _currentTabIndex = 0;
+    notifyListeners();
+  }
 
   void selectTab(int index) {
     if (_currentTabIndex == index) {
@@ -37,6 +56,13 @@ class AppState extends ChangeNotifier {
 
   void removeFromCart(String productId) {
     if (_cartProductIds.remove(productId)) {
+      notifyListeners();
+    }
+  }
+
+  void clearCart() {
+    if (_cartProductIds.isNotEmpty) {
+      _cartProductIds.clear();
       notifyListeners();
     }
   }
