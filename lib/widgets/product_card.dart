@@ -18,7 +18,19 @@ class ProductCard extends StatelessWidget {
   final bool compact;
   final bool showComparisonSummary;
 
-  StoreModel _storeById(String id) => stores.firstWhere((store) => store.id == id);
+  StoreModel _storeById(String id) => stores.firstWhere(
+        (store) => store.id == id,
+        orElse: () => StoreModel(
+          id: id,
+          name: 'Unknown store',
+          type: 'Unavailable',
+          distanceMiles: 0,
+          hasPickup: false,
+          hasDelivery: false,
+          membershipRequired: false,
+          colorHex: 0xFF9E9E9E,
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +39,7 @@ class ProductCard extends StatelessWidget {
     final bestUnit = product.bestUnitOption;
     final cheapestStore = _storeById(cheapest.storeId);
     final bestUnitStore = _storeById(bestUnit.storeId);
+    final cheapestPrice = cheapest.membershipPrice ?? cheapest.price;
 
     return InkWell(
       borderRadius: BorderRadius.circular(24),
@@ -68,7 +81,7 @@ class ProductCard extends StatelessWidget {
             const SizedBox(height: 16),
             Row(
               children: [
-                Expanded(child: _metricCard('Cheapest', cheapestStore.name, '\$${cheapest.price.toStringAsFixed(2)}')),
+                Expanded(child: _metricCard('Cheapest', cheapestStore.name, '\$${cheapestPrice.toStringAsFixed(2)}')),
                 const SizedBox(width: 12),
                 Expanded(child: _metricCard('Best unit', bestUnitStore.name, '\$${bestUnit.unitPrice.toStringAsFixed(2)}/${bestUnit.unitLabel}')),
               ],
