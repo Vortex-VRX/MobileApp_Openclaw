@@ -5,6 +5,7 @@ import '../../data/mock_data.dart';
 import '../../models/price_option.dart';
 import '../../models/product_model.dart';
 import '../../models/store_model.dart';
+import '../../widgets/product_image.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
@@ -27,67 +28,85 @@ class CartScreen extends StatelessWidget {
 
     return SafeArea(
       child: ListView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.fromLTRB(18, 16, 18, 24),
         children: [
-          Text('Cart comparison', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 20),
+          Text('Compare cart', style: Theme.of(context).textTheme.headlineMedium),
+          const SizedBox(height: 6),
+          const Text('See which store wins before you shop.', style: TextStyle(color: Color(0xFF667085), fontWeight: FontWeight.w600)),
+          const SizedBox(height: 18),
           if (cartItems.isEmpty)
             _emptyCart(context)
           else ...[
             Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(28)),
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                color: const Color(0xFF0AAD0A),
+                borderRadius: BorderRadius.circular(22),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Selected cart total', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                  const Text('Best cart match', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 8),
-                  if (best == null || worst == null)
-                    const Text('Prices are still being collected for the selected stores.', style: TextStyle(color: Colors.black54))
-                  else
-                    Text('Save \$${savings.toStringAsFixed(2)} by shopping at ${best.key.name} instead of ${worst.key.name}.', style: const TextStyle(color: Colors.black54)),
-                  const SizedBox(height: 20),
-                  ...totals.map((entry) {
-                    final store = entry.key;
-                    final isBest = best != null && store.id == best.key.id;
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: isBest ? const Color(0xFFE8F5E9) : const Color(0xFFF6F7F9),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(store.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                                  Text('${store.distanceMiles.toStringAsFixed(1)} mi • ${store.type}', style: const TextStyle(color: Colors.black54)),
-                                ],
-                              ),
-                            ),
-                            Text('\$${entry.value.toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                          ],
-                        ),
-                      ),
-                    );
-                  }),
+                  Text(best?.key.name ?? 'Collecting prices', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 28)),
+                  const SizedBox(height: 8),
+                  Text(
+                    best == null || worst == null
+                        ? 'Prices are still being collected for the selected stores.'
+                        : 'Estimated total \$${best.value.toStringAsFixed(2)} • Save \$${savings.toStringAsFixed(2)}',
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                  ),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
-            Text('Items in cart', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 14),
+            ...totals.map((entry) {
+              final store = entry.key;
+              final isBest = best != null && store.id == best.key.id;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: isBest ? const Color(0xFF0AAD0A) : const Color(0xFFE4E7EC), width: isBest ? 1.5 : 1),
+                  ),
+                  child: Row(
+                    children: [
+                      CircleAvatar(backgroundColor: Color(store.colorHex), child: Text(store.name.characters.first, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900))),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(store.name, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
+                            Text('${store.distanceMiles.toStringAsFixed(1)} mi • ${store.type}', style: const TextStyle(color: Color(0xFF667085))),
+                          ],
+                        ),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text('\$${entry.value.toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
+                          if (isBest) const Text('Best', style: TextStyle(color: Color(0xFF0AAD0A), fontWeight: FontWeight.w800)),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
+            const SizedBox(height: 18),
+            Text('Items selected', style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 12),
             ...cartItems.map(
               (product) => Padding(
-                padding: const EdgeInsets.only(bottom: 16),
+                padding: const EdgeInsets.only(bottom: 14),
                 child: _CartProductComparisonCard(
                   product: product,
                   storeById: _storeById,
-                  onRemove: () => appState.toggleCart(product.id),
+                  onRemove: () => appState.removeFromCart(product.id),
                 ),
               ),
             ),
@@ -100,15 +119,15 @@ class CartScreen extends StatelessWidget {
   Widget _emptyCart(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(28)),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20), border: Border.all(color: const Color(0xFFE4E7EC))),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.shopping_cart_outlined, color: Theme.of(context).colorScheme.primary, size: 32),
+          Icon(Icons.compare_arrows, color: Theme.of(context).colorScheme.primary, size: 34),
           const SizedBox(height: 12),
-          Text('Your cart is empty', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+          Text('Nothing to compare yet', style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 8),
-          const Text('Add products from Search or product details to compare prices across stores here.', style: TextStyle(color: Colors.black54)),
+          const Text('Add products from Search or product details to compare prices across stores here.', style: TextStyle(color: Color(0xFF667085))),
         ],
       ),
     );
@@ -145,41 +164,41 @@ class _CartProductComparisonCard extends StatelessWidget {
     final cheapestStore = storeById(cheapest.storeId);
 
     return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24)),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18), border: Border.all(color: const Color(0xFFE4E7EC))),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              CircleAvatar(radius: 24, child: Text(product.imageEmoji, style: const TextStyle(fontSize: 22))),
+              ProductImage(product: product, size: 56, borderRadius: 16),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                    Text(product.brand, style: const TextStyle(color: Colors.black54)),
+                    Text(product.name, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 17)),
+                    Text(product.brand, style: const TextStyle(color: Color(0xFF667085))),
                   ],
                 ),
               ),
               IconButton(
-                tooltip: 'Remove from cart',
+                tooltip: 'Remove from compare cart',
                 onPressed: onRemove,
-                icon: const Icon(Icons.remove_circle_outline),
+                icon: const Icon(Icons.close),
               ),
             ],
           ),
           const SizedBox(height: 12),
           Container(
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: const Color(0xFFE8F5E9), borderRadius: BorderRadius.circular(18)),
+            decoration: BoxDecoration(color: const Color(0xFFE9F8E9), borderRadius: BorderRadius.circular(14)),
             child: Row(
               children: [
-                const Icon(Icons.savings_outlined, size: 20),
+                const Icon(Icons.savings_outlined, size: 20, color: Color(0xFF087D08)),
                 const SizedBox(width: 8),
-                Expanded(child: Text('Best price at ${cheapestStore.name}')),
-                Text('\$${_displayPrice(cheapest).toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                Expanded(child: Text('Best price at ${cheapestStore.name}', style: const TextStyle(fontWeight: FontWeight.w800))),
+                Text('\$${_displayPrice(cheapest).toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.w900)),
               ],
             ),
           ),
@@ -194,9 +213,9 @@ class _CartProductComparisonCard extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF6F7F9),
-                  borderRadius: BorderRadius.circular(16),
-                  border: isCheapest ? Border.all(color: const Color(0xFF2E7D32)) : null,
+                  color: const Color(0xFFF7F8F6),
+                  borderRadius: BorderRadius.circular(14),
+                  border: isCheapest ? Border.all(color: const Color(0xFF0AAD0A)) : null,
                 ),
                 child: Row(
                   children: [
@@ -204,16 +223,16 @@ class _CartProductComparisonCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(store.name, style: const TextStyle(fontWeight: FontWeight.w600)),
-                          Text(option.availability ? 'In stock' : 'Unavailable', style: TextStyle(color: option.availability ? Colors.green : Colors.red)),
+                          Text(store.name, style: const TextStyle(fontWeight: FontWeight.w800)),
+                          Text(option.availability ? 'In stock' : 'Unavailable', style: TextStyle(color: option.availability ? const Color(0xFF0AAD0A) : Colors.red)),
                         ],
                       ),
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Text('\$${displayPrice.toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.bold)),
-                        Text('\$${option.unitPrice.toStringAsFixed(2)}/${option.unitLabel}', style: const TextStyle(color: Colors.black54)),
+                        Text('\$${displayPrice.toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.w900)),
+                        Text('\$${option.unitPrice.toStringAsFixed(2)}/${option.unitLabel}', style: const TextStyle(color: Color(0xFF667085))),
                       ],
                     ),
                   ],
