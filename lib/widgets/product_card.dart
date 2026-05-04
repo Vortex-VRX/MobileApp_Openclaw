@@ -5,6 +5,7 @@ import '../data/mock_data.dart';
 import '../models/product_model.dart';
 import '../models/store_model.dart';
 import 'product_detail_sheet.dart';
+import 'product_image.dart';
 
 class ProductCard extends StatelessWidget {
   const ProductCard({
@@ -42,7 +43,7 @@ class ProductCard extends StatelessWidget {
     final cheapestPrice = cheapest.membershipPrice ?? cheapest.price;
 
     return InkWell(
-      borderRadius: BorderRadius.circular(24),
+      borderRadius: BorderRadius.circular(18),
       onTap: () => showModalBottomSheet<void>(
         context: context,
         isScrollControlled: true,
@@ -50,44 +51,50 @@ class ProductCard extends StatelessWidget {
         builder: (_) => ProductDetailSheet(product: product),
       ),
       child: Container(
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24)),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: const Color(0xFFE4E7EC)),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                CircleAvatar(radius: compact ? 24 : 26, child: Text(product.imageEmoji, style: const TextStyle(fontSize: 22))),
+                ProductImage(product: product, size: compact ? 52 : 64, borderRadius: 16),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                      Text('${product.brand} • ${product.category}', style: const TextStyle(color: Colors.black54)),
+                      Text(product.name, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 17)),
+                      const SizedBox(height: 4),
+                      Text('${product.brand} • ${product.category}', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xFF667085))),
                     ],
                   ),
                 ),
                 IconButton(
                   onPressed: () => appState.toggleFavorite(product.id),
                   icon: Icon(appState.isFavorite(product.id) ? Icons.favorite : Icons.favorite_border),
+                  color: appState.isFavorite(product.id) ? const Color(0xFF0AAD0A) : const Color(0xFF667085),
                 ),
               ],
             ),
             if (!compact) ...[
               const SizedBox(height: 12),
-              Text(product.description, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.black87)),
+              Text(product.description, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xFF475467))),
             ],
-            const SizedBox(height: 16),
+            const SizedBox(height: 14),
             Row(
               children: [
-                Expanded(child: _metricCard('Cheapest', cheapestStore.name, '\$${cheapestPrice.toStringAsFixed(2)}')),
-                const SizedBox(width: 12),
-                Expanded(child: _metricCard('Best unit', bestUnitStore.name, '\$${bestUnit.unitPrice.toStringAsFixed(2)}/${bestUnit.unitLabel}')),
+                Expanded(child: _metricCard('Cheapest', cheapestStore.name, '\$${cheapestPrice.toStringAsFixed(2)}', true)),
+                const SizedBox(width: 10),
+                Expanded(child: _metricCard('Best unit', bestUnitStore.name, '\$${bestUnit.unitPrice.toStringAsFixed(2)}/${bestUnit.unitLabel}', false)),
               ],
             ),
             if (showComparisonSummary) ...[
-              const SizedBox(height: 16),
+              const SizedBox(height: 14),
               ...product.priceOptions.take(compact ? 2 : product.priceOptions.length).map((option) {
                 final store = _storeById(option.storeId);
                 final displayPrice = option.membershipPrice ?? option.price;
@@ -95,10 +102,10 @@ class ProductCard extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Row(
                     children: [
-                      Expanded(child: Text(store.name)),
-                      Text(option.availability ? 'In stock' : 'Unavailable', style: TextStyle(color: option.availability ? Colors.green : Colors.red)),
+                      Expanded(child: Text(store.name, style: const TextStyle(fontWeight: FontWeight.w600))),
+                      Text(option.availability ? 'In stock' : 'Unavailable', style: TextStyle(color: option.availability ? const Color(0xFF0AAD0A) : Colors.red)),
                       const SizedBox(width: 12),
-                      Text('\$${displayPrice.toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                      Text('\$${displayPrice.toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.w900)),
                     ],
                   ),
                 );
@@ -110,18 +117,21 @@ class ProductCard extends StatelessWidget {
     );
   }
 
-  Widget _metricCard(String label, String store, String value) {
+  Widget _metricCard(String label, String store, String value, bool highlighted) {
     return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(color: const Color(0xFFF6F7F9), borderRadius: BorderRadius.circular(18)),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: highlighted ? const Color(0xFFE9F8E9) : const Color(0xFFF7F8F6),
+        borderRadius: BorderRadius.circular(14),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(color: Colors.black54)),
-          const SizedBox(height: 8),
-          Text(store, style: const TextStyle(fontWeight: FontWeight.w600)),
+          Text(label, style: const TextStyle(color: Color(0xFF667085), fontSize: 12, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 6),
+          Text(store, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w700)),
           const SizedBox(height: 4),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          Text(value, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
         ],
       ),
     );
