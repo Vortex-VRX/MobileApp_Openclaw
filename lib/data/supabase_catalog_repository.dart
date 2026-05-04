@@ -34,6 +34,7 @@ class SupabaseCatalogRepository {
     final categoryRows = _rows(results[1]);
     final productRows = _rows(results[2]);
     final priceRows = _rows(results[3]);
+    final activeStoreIds = storeRows.map((row) => row['id'] as String).toSet();
 
     final categoriesById = {
       for (final row in categoryRows) row['id'] as String: row,
@@ -41,18 +42,27 @@ class SupabaseCatalogRepository {
 
     final pricesByProduct = <String, List<PriceOption>>{};
     for (final row in priceRows) {
+      final storeId = row['store_id'] as String;
+      if (!activeStoreIds.contains(storeId)) {
+        continue;
+      }
       final productId = row['product_id'] as String;
       pricesByProduct.putIfAbsent(productId, () => []).add(_priceFromRow(row));
     }
 
+    final products = productRows
+        .map((row) {
+          final categoryId = row['category_id'] as String;
+          final categoryTitle = categoriesById[categoryId]?['title'] as String? ?? categoryId;
+          return _productFromRow(row, categoryTitle, pricesByProduct[row['id']] ?? const []);
+        })
+        .where((product) => product.priceOptions.isNotEmpty)
+        .toList();
+
     return CatalogData(
       stores: storeRows.map(_storeFromRow).toList(),
       categories: categoryRows.map(_categoryFromRow).toList(),
-      products: productRows.map((row) {
-        final categoryId = row['category_id'] as String;
-        final categoryTitle = categoriesById[categoryId]?['title'] as String? ?? categoryId;
-        return _productFromRow(row, categoryTitle, pricesByProduct[row['id']] ?? const []);
-      }).toList(),
+      products: products,
     );
   }
 
