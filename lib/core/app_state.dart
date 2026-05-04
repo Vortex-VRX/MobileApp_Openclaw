@@ -3,12 +3,22 @@ import 'package:flutter/material.dart';
 class AppState extends ChangeNotifier {
   final Set<String> _favoriteProductIds = {'milk', 'banana'};
   final Set<String> _cartProductIds = {'milk', 'eggs', 'chicken', 'banana'};
+  int _currentTabIndex = 0;
 
   Set<String> get favoriteProductIds => _favoriteProductIds;
   Set<String> get cartProductIds => _cartProductIds;
+  int get currentTabIndex => _currentTabIndex;
 
   bool isFavorite(String productId) => _favoriteProductIds.contains(productId);
   bool inCart(String productId) => _cartProductIds.contains(productId);
+
+  void selectTab(int index) {
+    if (_currentTabIndex == index) {
+      return;
+    }
+    _currentTabIndex = index;
+    notifyListeners();
+  }
 
   void toggleFavorite(String productId) {
     if (_favoriteProductIds.contains(productId)) {
@@ -17,6 +27,18 @@ class AppState extends ChangeNotifier {
       _favoriteProductIds.add(productId);
     }
     notifyListeners();
+  }
+
+  void addToCart(String productId) {
+    if (_cartProductIds.add(productId)) {
+      notifyListeners();
+    }
+  }
+
+  void removeFromCart(String productId) {
+    if (_cartProductIds.remove(productId)) {
+      notifyListeners();
+    }
   }
 
   void toggleCart(String productId) {
