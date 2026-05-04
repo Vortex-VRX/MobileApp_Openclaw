@@ -41,6 +41,7 @@ class ProductCard extends StatelessWidget {
     final cheapestStore = _storeById(cheapest.storeId);
     final bestUnitStore = _storeById(bestUnit.storeId);
     final cheapestPrice = cheapest.membershipPrice ?? cheapest.price;
+    final inCart = appState.inCart(product.id);
 
     return InkWell(
       borderRadius: BorderRadius.circular(18),
@@ -61,23 +62,40 @@ class ProductCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ProductImage(product: product, size: compact ? 52 : 64, borderRadius: 16),
+                ProductImage(product: product, size: compact ? 58 : 76, borderRadius: 16, fit: BoxFit.contain),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(product.name, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 17)),
+                      Text(product.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 17, height: 1.1)),
                       const SizedBox(height: 4),
-                      Text('${product.brand} • ${product.category}', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xFF667085))),
+                      Text('${product.brand} - ${product.packageInfo}', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xFF667085))),
+                      const SizedBox(height: 8),
+                      Text('\$${cheapestPrice.toStringAsFixed(2)}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
+                      Text('${cheapestStore.name} - \$${cheapest.unitPrice.toStringAsFixed(2)}/${cheapest.unitLabel}', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xFF667085), fontWeight: FontWeight.w600)),
                     ],
                   ),
                 ),
-                IconButton(
-                  onPressed: () => appState.toggleFavorite(product.id),
-                  icon: Icon(appState.isFavorite(product.id) ? Icons.favorite : Icons.favorite_border),
-                  color: appState.isFavorite(product.id) ? const Color(0xFF0AAD0A) : const Color(0xFF667085),
+                Column(
+                  children: [
+                    SizedBox(
+                      height: 34,
+                      child: FilledButton(
+                        style: FilledButton.styleFrom(minimumSize: const Size(64, 34), padding: const EdgeInsets.symmetric(horizontal: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999))),
+                        onPressed: () => appState.addToCart(product.id),
+                        child: Text(inCart ? 'Added' : 'Add'),
+                      ),
+                    ),
+                    IconButton(
+                      tooltip: 'Favorite',
+                      onPressed: () => appState.toggleFavorite(product.id),
+                      icon: Icon(appState.isFavorite(product.id) ? Icons.favorite : Icons.favorite_border),
+                      color: appState.isFavorite(product.id) ? const Color(0xFF0AAD0A) : const Color(0xFF667085),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -85,25 +103,25 @@ class ProductCard extends StatelessWidget {
               const SizedBox(height: 12),
               Text(product.description, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xFF475467))),
             ],
-            const SizedBox(height: 14),
-            Row(
-              children: [
-                Expanded(child: _metricCard('Cheapest', cheapestStore.name, '\$${cheapestPrice.toStringAsFixed(2)}', true)),
-                const SizedBox(width: 10),
-                Expanded(child: _metricCard('Best unit', bestUnitStore.name, '\$${bestUnit.unitPrice.toStringAsFixed(2)}/${bestUnit.unitLabel}', false)),
-              ],
-            ),
             if (showComparisonSummary) ...[
               const SizedBox(height: 14),
-              ...product.priceOptions.take(compact ? 2 : product.priceOptions.length).map((option) {
+              Row(
+                children: [
+                  Expanded(child: _metricCard('Cheapest', cheapestStore.name, '\$${cheapestPrice.toStringAsFixed(2)}', true)),
+                  const SizedBox(width: 10),
+                  Expanded(child: _metricCard('Best unit', bestUnitStore.name, '\$${bestUnit.unitPrice.toStringAsFixed(2)}/${bestUnit.unitLabel}', false)),
+                ],
+              ),
+              const SizedBox(height: 12),
+              ...product.priceOptions.take(compact ? 2 : 4).map((option) {
                 final store = _storeById(option.storeId);
                 final displayPrice = option.membershipPrice ?? option.price;
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Row(
                     children: [
-                      Expanded(child: Text(store.name, style: const TextStyle(fontWeight: FontWeight.w600))),
-                      Text(option.availability ? 'In stock' : 'Unavailable', style: TextStyle(color: option.availability ? const Color(0xFF0AAD0A) : Colors.red)),
+                      Expanded(child: Text(store.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w700))),
+                      Text(option.availability ? 'In stock' : 'Unavailable', style: TextStyle(color: option.availability ? const Color(0xFF0AAD0A) : Colors.red, fontWeight: FontWeight.w700)),
                       const SizedBox(width: 12),
                       Text('\$${displayPrice.toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.w900)),
                     ],
