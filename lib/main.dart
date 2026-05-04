@@ -6,6 +6,7 @@ import 'core/app_theme.dart';
 import 'core/supabase_config.dart';
 import 'data/mock_data.dart';
 import 'data/supabase_catalog_repository.dart';
+import 'screens/auth/auth_screen.dart';
 import 'widgets/app_shell.dart';
 
 Future<void> main() async {
@@ -50,7 +51,10 @@ class _GroceryPriceCompareRootState extends State<GroceryPriceCompareRoot> {
         title: 'Grocery Price Compare',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
-        home: const GroceryPriceCompareApp(),
+        home: ListenableBuilder(
+          listenable: _appState,
+          builder: (context, _) => _appState.isSignedIn ? const GroceryPriceCompareApp() : const AuthScreen(),
+        ),
       ),
     );
   }
