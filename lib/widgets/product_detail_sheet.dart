@@ -38,7 +38,7 @@ class ProductDetailSheet extends StatelessWidget {
       builder: (context, controller) {
         return Container(
           decoration: const BoxDecoration(
-            color: Color(0xFFF6F7F9),
+            color: Color(0xFFF7F8F6),
             borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
           ),
           child: ListView(
@@ -144,12 +144,48 @@ class ProductDetailSheet extends StatelessWidget {
               }),
               const SizedBox(height: 12),
               FilledButton.icon(
-                onPressed: () => appState.toggleCart(product.id),
-                icon: Icon(appState.inCart(product.id) ? Icons.remove_shopping_cart : Icons.add_shopping_cart),
-                label: Text(appState.inCart(product.id) ? 'Remove from cart' : 'Add to cart'),
+                onPressed: () => _handleCartAction(context, appState),
+                icon: Icon(appState.inCart(product.id) ? Icons.compare_arrows : Icons.add_shopping_cart),
+                label: Text(appState.inCart(product.id) ? 'View compare' : 'Add and compare'),
               ),
             ],
           ),
+        );
+      },
+    );
+  }
+
+  void _handleCartAction(BuildContext context, AppState appState) {
+    if (appState.inCart(product.id)) {
+      Navigator.of(context).pop();
+      appState.selectTab(2);
+      return;
+    }
+
+    appState.addToCart(product.id);
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: const Text('Added to compare cart'),
+          content: Text('${product.name} is ready to compare across stores.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+              child: const Text('Keep shopping'),
+            ),
+            FilledButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+                Navigator.of(context).pop();
+                appState.selectTab(2);
+              },
+              child: const Text('Compare prices'),
+            ),
+          ],
         );
       },
     );
