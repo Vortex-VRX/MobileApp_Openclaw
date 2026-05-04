@@ -59,9 +59,19 @@ class SupabaseCatalogRepository {
         .where((product) => product.priceOptions.isNotEmpty)
         .toList();
 
+    final countsByCategory = <String, int>{};
+    for (final row in productRows) {
+      final productId = row['id'] as String;
+      if ((pricesByProduct[productId] ?? const []).isEmpty) {
+        continue;
+      }
+      final categoryId = row['category_id'] as String;
+      countsByCategory[categoryId] = (countsByCategory[categoryId] ?? 0) + 1;
+    }
+
     return CatalogData(
       stores: storeRows.map(_storeFromRow).toList(),
-      categories: categoryRows.map(_categoryFromRow).toList(),
+      categories: categoryRows.map((row) => _categoryFromRow(row, countsByCategory[row['id']] ?? 0)).toList(),
       products: products,
     );
   }
@@ -83,12 +93,12 @@ class SupabaseCatalogRepository {
     );
   }
 
-  CategoryModel _categoryFromRow(Map<String, dynamic> row) {
+  CategoryModel _categoryFromRow(Map<String, dynamic> row, int itemCount) {
     return CategoryModel(
       id: row['id'] as String,
       title: row['title'] as String,
       icon: row['icon'] as String,
-      itemCount: row['item_count'] as int? ?? 0,
+      itemCount: itemCount,
     );
   }
 
