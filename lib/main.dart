@@ -51,8 +51,8 @@ class _GroceryPriceCompareRootState extends State<GroceryPriceCompareRoot> {
         title: 'Grocery Price Compare',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
-        home: ListenableBuilder(
-          listenable: _appState,
+        home: AnimatedBuilder(
+          animation: _appState,
           builder: (context, _) => _appState.isSignedIn ? const GroceryPriceCompareApp() : const AuthScreen(),
         ),
       ),
