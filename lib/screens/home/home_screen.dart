@@ -9,7 +9,7 @@ import '../../widgets/product_card.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  StoreModel _storeById(String id) => stores.firstWhere((store) => store.id == id);
+  StoreModel _storeById(String id) => stores.firstWhere((store) => store.id == id, orElse: () => StoreModel(id: id, name: 'Unknown store', type: 'Unavailable', distanceMiles: 0, hasPickup: false, hasDelivery: false, membershipRequired: false, colorHex: 0xFF9E9E9E));
 
   @override
   Widget build(BuildContext context) {
@@ -115,6 +115,7 @@ class HomeScreen extends StatelessWidget {
           ...products.take(4).map((product) {
             final cheapest = product.cheapestOption;
             final store = _storeById(cheapest.storeId);
+            final displayPrice = cheapest.membershipPrice ?? cheapest.price;
             return Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: ListTile(
@@ -127,7 +128,7 @@ class HomeScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text('\$${cheapest.price.toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                    Text('\$${displayPrice.toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.bold)),
                     Text('\$${cheapest.unitPrice.toStringAsFixed(2)}/${cheapest.unitLabel}', style: const TextStyle(color: Colors.black54)),
                   ],
                 ),
@@ -152,15 +153,29 @@ class HomeScreen extends StatelessWidget {
   }
 
   StoreModel _bestCartStore() {
-    final totals = {for (final store in stores) store.id: _cartTotal(store.id)};
+    final totals = {
+      for (final store in stores)
+        if (_hasPricesForAllItems(store.id, products.take(4).toList())) store.id: _cartTotal(store.id),
+    };
+    if (totals.isEmpty) {
+      return stores.first;
+    }
     final bestStoreId = totals.entries.reduce((a, b) => a.value <= b.value ? a : b).key;
     return _storeById(bestStoreId);
+  }
+
+  bool _hasPricesForAllItems(String storeId, List<ProductModel> cartItems) {
+    return cartItems.every((product) => product.priceOptions.any((item) => item.storeId == storeId));
   }
 
   double _cartTotal(String storeId) {
     var total = 0.0;
     for (final product in products.take(4)) {
-      final option = product.priceOptions.firstWhere((item) => item.storeId == storeId);
+      final options = product.priceOptions.where((item) => item.storeId == storeId);
+      if (options.isEmpty) {
+        continue;
+      }
+      final option = options.first;
       total += option.membershipPrice ?? option.price;
     }
     return total;
