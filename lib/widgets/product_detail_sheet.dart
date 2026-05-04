@@ -97,7 +97,7 @@ class ProductDetailSheet extends StatelessWidget {
                           const SizedBox(height: 14),
                           Row(
                             children: [
-                              Expanded(child: _summaryTile('Best price', '$cheapestStoreName', '\$${cheapestPrice.toStringAsFixed(2)}', true)),
+                              Expanded(child: _summaryTile('Best price', cheapestStore.name, '\$${cheapestPrice.toStringAsFixed(2)}', true)),
                               const SizedBox(width: 10),
                               Expanded(child: _summaryTile('Unit price', bestUnit.unitLabel, '\$${bestUnit.unitPrice.toStringAsFixed(2)}', false)),
                             ],
@@ -141,8 +141,6 @@ class ProductDetailSheet extends StatelessWidget {
       },
     );
   }
-
-  String get cheapestStoreName => _storeById(product.cheapestOption.storeId).name;
 
   void _handleCartAction(BuildContext context, AppState appState) {
     if (appState.inCart(product.id)) {
