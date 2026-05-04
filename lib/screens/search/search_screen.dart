@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/app_state.dart';
 import '../../data/mock_data.dart';
 import '../../widgets/product_card.dart';
 
@@ -9,6 +10,7 @@ class SearchScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final appState = AppStateScope.of(context);
 
     return SafeArea(
       child: ListView(
@@ -22,13 +24,14 @@ class SearchScreen extends StatelessWidget {
                   children: [
                     Text('Search groceries', style: theme.textTheme.headlineMedium),
                     const SizedBox(height: 6),
-                    const Text('Wakefield, MA 01880', style: TextStyle(color: Color(0xFF667085), fontWeight: FontWeight.w600)),
+                    const Text('Find food items, add them, then compare stores.', style: TextStyle(color: Color(0xFF667085), fontWeight: FontWeight.w600)),
                   ],
                 ),
               ),
               IconButton.filled(
-                onPressed: () {},
-                icon: const Icon(Icons.tune),
+                tooltip: 'Compare cart',
+                onPressed: () => appState.selectTab(2),
+                icon: Badge.count(count: appState.cartProductIds.length, isLabelVisible: appState.cartProductIds.isNotEmpty, child: const Icon(Icons.shopping_cart_outlined)),
                 style: IconButton.styleFrom(backgroundColor: Colors.white, foregroundColor: const Color(0xFF1F2933)),
               ),
             ],
@@ -44,20 +47,22 @@ class SearchScreen extends StatelessWidget {
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
-              children: const [
-                _FilterChip(label: 'Lowest price', selected: true),
-                _FilterChip(label: 'In stock'),
-                _FilterChip(label: 'BJ\'s'),
-                _FilterChip(label: 'Market Basket'),
-                _FilterChip(label: 'Costco'),
+              children: [
+                const _FilterChip(label: 'Lowest price', selected: true),
+                ...stores.map((store) => _FilterChip(label: store.name)),
               ],
             ),
+          ),
+          const SizedBox(height: 14),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(children: categories.map((category) => _FilterChip(label: '${category.icon} ${category.title}')).toList()),
           ),
           const SizedBox(height: 22),
           Row(
             children: [
-              Expanded(child: Text('${products.length} products', style: theme.textTheme.titleLarge)),
-              const Text('Compare prices', style: TextStyle(color: Color(0xFF0AAD0A), fontWeight: FontWeight.w800)),
+              Expanded(child: Text('${products.length} groceries', style: theme.textTheme.titleLarge)),
+              TextButton.icon(onPressed: () => appState.selectTab(2), icon: const Icon(Icons.compare_arrows), label: const Text('Compare')),
             ],
           ),
           const SizedBox(height: 12),
