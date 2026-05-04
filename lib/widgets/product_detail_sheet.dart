@@ -10,11 +10,25 @@ class ProductDetailSheet extends StatelessWidget {
 
   final ProductModel product;
 
-  StoreModel _storeById(String id) => stores.firstWhere((store) => store.id == id);
+  StoreModel _storeById(String id) => stores.firstWhere(
+        (store) => store.id == id,
+        orElse: () => StoreModel(
+          id: id,
+          name: 'Unknown store',
+          type: 'Unavailable',
+          distanceMiles: 0,
+          hasPickup: false,
+          hasDelivery: false,
+          membershipRequired: false,
+          colorHex: 0xFF9E9E9E,
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
     final appState = AppStateScope.of(context);
+    final cheapest = product.cheapestOption;
+    final cheapestPrice = cheapest.membershipPrice ?? cheapest.price;
 
     return DraggableScrollableSheet(
       expand: false,
@@ -71,7 +85,7 @@ class ProductDetailSheet extends StatelessWidget {
               const SizedBox(height: 20),
               Row(
                 children: [
-                  Expanded(child: _statCard('Cheapest', '\$${product.cheapestOption.price.toStringAsFixed(2)}')),
+                  Expanded(child: _statCard('Cheapest', '\$${cheapestPrice.toStringAsFixed(2)}')),
                   const SizedBox(width: 12),
                   Expanded(child: _statCard('Best unit', '\$${product.bestUnitOption.unitPrice.toStringAsFixed(2)}/${product.bestUnitOption.unitLabel}')),
                   const SizedBox(width: 12),
