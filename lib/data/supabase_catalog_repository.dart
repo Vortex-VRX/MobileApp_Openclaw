@@ -104,6 +104,7 @@ class SupabaseCatalogRepository {
       category: categoryTitle,
       packageInfo: row['package_info'] as String,
       imageEmoji: row['image_emoji'] as String,
+      imageUrl: row['image_url'] as String?,
       healthyScore: row['healthy_score'] as int? ?? 0,
       description: row['description'] as String,
       tags: List<String>.from(row['tags'] as List? ?? const []),
