@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../data/mock_data.dart';
+import '../../models/category_model.dart';
 import '../../models/product_model.dart';
 import '../../models/store_model.dart';
+import '../../screens/categories/category_products_screen.dart';
 import '../../widgets/grocery_product_tile.dart';
 
 class StoreProductsScreen extends StatelessWidget {
@@ -13,6 +15,7 @@ class StoreProductsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final storeProducts = products.where((product) => product.priceOptions.any((option) => option.storeId == store.id)).toList();
+    final storeCategories = categories.where((category) => storeProducts.any((product) => product.category == category.title)).toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -52,6 +55,18 @@ class StoreProductsScreen extends StatelessWidget {
                       decoration: InputDecoration(hintText: 'Search this store', prefixIcon: Icon(Icons.search)),
                     ),
                     const SizedBox(height: 16),
+                    Text('Categories', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Colors.black)),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      height: 94,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: storeCategories.length,
+                        separatorBuilder: (_, __) => const SizedBox(width: 10),
+                        itemBuilder: (context, index) => _StoreCategoryTile(category: storeCategories[index], store: store),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
                     Text('All groceries', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Colors.black)),
                   ],
                 ),
@@ -72,6 +87,43 @@ class StoreProductsScreen extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _StoreCategoryTile extends StatelessWidget {
+  const _StoreCategoryTile({required this.category, required this.store});
+
+  final CategoryModel category;
+  final StoreModel store;
+
+  @override
+  Widget build(BuildContext context) {
+    final count = products.where((product) {
+      return product.category == category.title && product.priceOptions.any((option) => option.storeId == store.id);
+    }).length;
+
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(8),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(8),
+        onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => CategoryProductsScreen(category: category, store: store))),
+        child: Container(
+          width: 132,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), border: Border.all(width: 0.4, color: const Color(0xFFE4E7EC))),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(category.icon, style: const TextStyle(fontSize: 26)),
+              const Spacer(),
+              Text(category.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w900)),
+              Text('$count items', style: const TextStyle(color: Color(0xFF667085), fontSize: 12)),
+            ],
+          ),
         ),
       ),
     );
