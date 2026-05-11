@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../data/mock_data.dart';
 import '../../models/category_model.dart';
-import '../../models/product_model.dart';
 import '../../models/store_model.dart';
 import '../../screens/categories/category_products_screen.dart';
 import '../../widgets/grocery_product_tile.dart';
@@ -15,7 +14,7 @@ class StoreProductsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final storeProducts = products.where((product) => product.priceOptions.any((option) => option.storeId == store.id)).toList();
-    final storeCategories = categories.where((category) => storeProducts.any((product) => product.category == category.title)).toList();
+    final storeCategories = categories.where((category) => storeProducts.any((product) => product.categoryId == category.id)).toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -102,7 +101,7 @@ class _StoreCategoryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final count = products.where((product) {
-      return product.category == category.title && product.priceOptions.any((option) => option.storeId == store.id);
+      return product.categoryId == category.id && product.priceOptions.any((option) => option.storeId == store.id);
     }).length;
 
     return Material(
