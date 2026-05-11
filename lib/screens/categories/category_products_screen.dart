@@ -102,7 +102,7 @@ class CategoryProductsScreen extends StatelessWidget {
 
   List<ProductModel> _productsForCategory() {
     return products.where((product) {
-      final categoryMatches = product.category == category.title;
+      final categoryMatches = product.categoryId == category.id;
       if (!categoryMatches) {
         return false;
       }
