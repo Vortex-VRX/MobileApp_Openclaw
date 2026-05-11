@@ -6,6 +6,7 @@ class ProductModel {
     required this.name,
     required this.brand,
     required this.category,
+    required this.categoryId,
     required this.packageInfo,
     required this.imageEmoji,
     required this.healthyScore,
@@ -19,6 +20,7 @@ class ProductModel {
   final String name;
   final String brand;
   final String category;
+  final String categoryId;
   final String packageInfo;
   final String imageEmoji;
   final String? imageUrl;
