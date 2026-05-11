@@ -133,7 +133,7 @@ class _CategoryStrip extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 0, 0, 18),
       child: Column(
         children: [
-          _TitleAndAction(title: 'Target Food Categories', action: 'Search', onTap: () => AppStateScope.of(context).selectTab(1)),
+          _TitleAndAction(title: 'Food Categories', action: 'Search', onTap: () => AppStateScope.of(context).selectTab(1)),
           const SizedBox(height: 10),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -154,6 +154,8 @@ class _CategoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final count = products.where((product) => product.categoryId == category.id).length;
+
     return Padding(
       padding: const EdgeInsets.only(right: 12),
       child: Material(
@@ -173,7 +175,7 @@ class _CategoryTile extends StatelessWidget {
                 const SizedBox(height: 16),
                 Text(category.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w900)),
                 const SizedBox(height: 4),
-                Text('${category.itemCount} items', style: const TextStyle(color: Color(0xFF667085))),
+                Text('$count items', style: const TextStyle(color: Color(0xFF667085))),
               ],
             ),
           ),
