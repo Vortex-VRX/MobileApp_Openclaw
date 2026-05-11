@@ -4,6 +4,7 @@ import '../../core/app_state.dart';
 import '../../data/mock_data.dart';
 import '../../models/category_model.dart';
 import '../../models/store_model.dart';
+import '../../screens/categories/category_products_screen.dart';
 import '../../screens/stores/store_products_screen.dart';
 import '../../widgets/grocery_product_tile.dart';
 
@@ -132,7 +133,7 @@ class _CategoryStrip extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 0, 0, 18),
       child: Column(
         children: [
-          _TitleAndAction(title: 'Food Categories', action: 'Search', onTap: () => AppStateScope.of(context).selectTab(1)),
+          _TitleAndAction(title: 'Target Food Categories', action: 'Search', onTap: () => AppStateScope.of(context).selectTab(1)),
           const SizedBox(height: 10),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -155,19 +156,27 @@ class _CategoryTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(right: 12),
-      child: Container(
-        width: 132,
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(width: 0.4, color: const Color(0xFFE4E7EC))),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(category.icon, style: const TextStyle(fontSize: 30)),
-            const SizedBox(height: 16),
-            Text(category.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w900)),
-            const SizedBox(height: 4),
-            Text('${category.itemCount} items', style: const TextStyle(color: Color(0xFF667085))),
-          ],
+      child: Material(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(8),
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => CategoryProductsScreen(category: category))),
+          child: Container(
+            width: 132,
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), border: Border.all(width: 0.4, color: const Color(0xFFE4E7EC))),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(category.icon, style: const TextStyle(fontSize: 30)),
+                const SizedBox(height: 16),
+                Text(category.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w900)),
+                const SizedBox(height: 4),
+                Text('${category.itemCount} items', style: const TextStyle(color: Color(0xFF667085))),
+              ],
+            ),
+          ),
         ),
       ),
     );
