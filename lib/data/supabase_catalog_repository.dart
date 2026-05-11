@@ -54,19 +54,14 @@ class SupabaseCatalogRepository {
         .map((row) {
           final categoryId = row['category_id'] as String;
           final categoryTitle = categoriesById[categoryId]?['title'] as String? ?? categoryId;
-          return _productFromRow(row, categoryTitle, pricesByProduct[row['id']] ?? const []);
+          return _productFromRow(row, categoryId, categoryTitle, pricesByProduct[row['id']] ?? const []);
         })
         .where((product) => product.priceOptions.isNotEmpty)
         .toList();
 
     final countsByCategory = <String, int>{};
-    for (final row in productRows) {
-      final productId = row['id'] as String;
-      if ((pricesByProduct[productId] ?? const []).isEmpty) {
-        continue;
-      }
-      final categoryId = row['category_id'] as String;
-      countsByCategory[categoryId] = (countsByCategory[categoryId] ?? 0) + 1;
+    for (final product in products) {
+      countsByCategory[product.categoryId] = (countsByCategory[product.categoryId] ?? 0) + 1;
     }
 
     return CatalogData(
@@ -104,6 +99,7 @@ class SupabaseCatalogRepository {
 
   ProductModel _productFromRow(
     Map<String, dynamic> row,
+    String categoryId,
     String categoryTitle,
     List<PriceOption> prices,
   ) {
@@ -112,6 +108,7 @@ class SupabaseCatalogRepository {
       name: row['name'] as String,
       brand: row['brand'] as String,
       category: categoryTitle,
+      categoryId: categoryId,
       packageInfo: row['package_info'] as String,
       imageEmoji: row['image_emoji'] as String,
       imageUrl: row['image_url'] as String?,
