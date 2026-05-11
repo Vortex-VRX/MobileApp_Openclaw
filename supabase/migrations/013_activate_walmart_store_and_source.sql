@@ -1,5 +1,5 @@
 insert into stores (id, name, type, distance_miles, has_pickup, has_delivery, membership_required, color_hex, active, retailer_code, market_area_id, source_url, address_line_1, city, state, zip_code, updated_at)
-values ('walmart', 'Walmart', 'Discount Supercenter', 2.4, true, true, false, '0xFF0071CE', true, 'walmart', 'wakefield-01880', 'https://www.walmart.com/cp/food/976759', '780 Lynnway', 'Lynn', 'MA', '01905', now())
+values ('walmart', 'Walmart', 'Discount Supercenter', 2.4, true, true, false, '#0071CE', true, 'walmart', 'wakefield-01880', 'https://www.walmart.com/cp/food/976759', '780 Lynnway', 'Lynn', 'MA', '01905', now())
 on conflict (id) do update set
   name = excluded.name,
   type = excluded.type,
