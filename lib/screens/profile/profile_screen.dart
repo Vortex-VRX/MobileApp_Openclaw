@@ -59,6 +59,12 @@ class ProfileScreen extends StatelessWidget {
           const SizedBox(height: 18),
           _MenuGroup(
             children: [
+              _MenuRow(
+                icon: appState.isRefreshingCatalog ? Icons.hourglass_top : Icons.sync,
+                title: 'Refresh grocery data',
+                subtitle: _catalogSubtitle(appState),
+                onTap: appState.refreshCatalog,
+              ),
               _MenuRow(icon: Icons.notifications_active_outlined, title: 'Price drop alerts', subtitle: 'Set alerts for items in your compare cart', onTap: () => _showMessage(context, 'Price alerts', 'Alerts will watch your selected groceries and notify you when a better price appears.')),
               _MenuRow(icon: Icons.storefront_outlined, title: 'Preferred stores', subtitle: stores.map((store) => store.name).join(', '), onTap: () => appState.selectTab(3)),
               _MenuRow(icon: Icons.favorite_outline, title: 'Favorites', subtitle: '$favoritesCount saved groceries', onTap: () => _showFavorites(context, appState)),
@@ -69,6 +75,19 @@ class ProfileScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _catalogSubtitle(AppState appState) {
+    final refreshed = appState.lastCatalogRefresh;
+    if (appState.isRefreshingCatalog) {
+      return 'Loading the newest Supabase products';
+    }
+    if (refreshed == null) {
+      return appState.catalogStatus;
+    }
+    final hour = refreshed.hour.toString().padLeft(2, '0');
+    final minute = refreshed.minute.toString().padLeft(2, '0');
+    return '${appState.catalogStatus} at $hour:$minute';
   }
 
   Future<void> _signOut(BuildContext context, AppState appState) async {
