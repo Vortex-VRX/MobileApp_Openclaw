@@ -1,19 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../data/mock_data.dart';
+import '../data/supabase_catalog_repository.dart';
+import 'supabase_config.dart';
 
 class AppState extends ChangeNotifier {
   final Set<String> _favoriteProductIds = {'milk', 'banana'};
   final Set<String> _cartProductIds = <String>{};
   int _currentTabIndex = 0;
   bool _isSignedIn = false;
+  bool _isRefreshingCatalog = false;
   String _userEmail = '';
   String _userName = 'Guest shopper';
+  String _catalogStatus = 'Ready';
+  DateTime? _lastCatalogRefresh;
 
   Set<String> get favoriteProductIds => _favoriteProductIds;
   Set<String> get cartProductIds => _cartProductIds;
   int get currentTabIndex => _currentTabIndex;
   bool get isSignedIn => _isSignedIn;
+  bool get isRefreshingCatalog => _isRefreshingCatalog;
   String get userEmail => _userEmail;
   String get userName => _userName;
+  String get catalogStatus => _catalogStatus;
+  DateTime? get lastCatalogRefresh => _lastCatalogRefresh;
 
   bool isFavorite(String productId) => _favoriteProductIds.contains(productId);
   bool inCart(String productId) => _cartProductIds.contains(productId);
@@ -29,6 +40,36 @@ class AppState extends ChangeNotifier {
     _isSignedIn = false;
     _currentTabIndex = 0;
     notifyListeners();
+  }
+
+  Future<void> refreshCatalog() async {
+    if (_isRefreshingCatalog) {
+      return;
+    }
+    if (!SupabaseConfig.isConfigured) {
+      _catalogStatus = 'Supabase is not configured';
+      notifyListeners();
+      return;
+    }
+
+    _isRefreshingCatalog = true;
+    _catalogStatus = 'Refreshing grocery data...';
+    notifyListeners();
+
+    try {
+      if (!Supabase.instance.client.isBlank) {
+        final repository = SupabaseCatalogRepository(Supabase.instance.client);
+        final catalog = await repository.loadCatalog();
+        replaceCatalogData(catalog);
+        _lastCatalogRefresh = DateTime.now();
+        _catalogStatus = 'Catalog updated';
+      }
+    } catch (_) {
+      _catalogStatus = 'Could not refresh catalog';
+    } finally {
+      _isRefreshingCatalog = false;
+      notifyListeners();
+    }
   }
 
   void selectTab(int index) {
