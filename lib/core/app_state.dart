@@ -57,13 +57,11 @@ class AppState extends ChangeNotifier {
     notifyListeners();
 
     try {
-      if (!Supabase.instance.client.isBlank) {
-        final repository = SupabaseCatalogRepository(Supabase.instance.client);
-        final catalog = await repository.loadCatalog();
-        replaceCatalogData(catalog);
-        _lastCatalogRefresh = DateTime.now();
-        _catalogStatus = 'Catalog updated';
-      }
+      final repository = SupabaseCatalogRepository(Supabase.instance.client);
+      final catalog = await repository.loadCatalog();
+      replaceCatalogData(catalog);
+      _lastCatalogRefresh = DateTime.now();
+      _catalogStatus = 'Catalog updated';
     } catch (_) {
       _catalogStatus = 'Could not refresh catalog';
     } finally {
